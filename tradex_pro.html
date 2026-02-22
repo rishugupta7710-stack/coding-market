@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TradeX Pro — Advanced Market Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #060912;
+  --card: #0d1424;
+  --card2: #111827;
+  --border: #1a2540;
+  --green: #00ff88;
+  --red: #ff3b6b;
+  --yellow: #fbbf24;
+  --blue: #38bdf8;
+  --purple: #a855f7;
+  --text: #e2e8f0;
+  --muted: #64748b;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:'Rajdhani',sans-serif; overflow-x:hidden; }
+body::before {
+  content:''; position:fixed; inset:0;
+  background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0,255,136,0.06), transparent),
+              radial-gradient(ellipse 60% 40% at 80% 80%, rgba(56,189,248,0.04), transparent);
+  pointer-events:none; z-index:0;
+}
+body::after {
+  content:''; position:fixed; inset:0;
+  background-image: linear-gradient(rgba(0,255,136,0.02) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0,255,136,0.02) 1px, transparent 1px);
+  background-size:50px 50px; pointer-events:none; z-index:0;
+}
+
+/* NAVBAR */
+.navbar {
+  position:sticky; top:0; z-index:100;
+  background:rgba(6,9,18,0.97); backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  display:flex; align-items:center; gap:12px;
+  padding:0 16px; height:58px;
+}
+.nav-logo {
+  font-family:'Orbitron',monospace; font-size:16px; font-weight:900;
+  background:linear-gradient(90deg,var(--green),var(--blue));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  white-space:nowrap; letter-spacing:2px;
+}
+.nav-tabs { display:flex; gap:4px; flex:1; overflow-x:auto; scrollbar-width:none; }
+.nav-tabs::-webkit-scrollbar { display:none; }
+.nav-tab {
+  padding:6px 13px; border-radius:8px; font-size:13px; font-weight:600;
+  white-space:nowrap; cursor:pointer; color:var(--muted);
+  transition:all 0.2s; border:1px solid transparent; letter-spacing:1px;
+}
+.nav-tab:hover { color:var(--text); background:var(--card); }
+.nav-tab.active { color:var(--green); background:rgba(0,255,136,0.08); border-color:rgba(0,255,136,0.25); }
+.live-badge {
+  display:flex; align-items:center; gap:6px; padding:5px 12px;
+  background:rgba(0,255,136,0.08); border:1px solid rgba(0,255,136,0.25);
+  border-radius:20px; font-size:11px; color:var(--green);
+  font-family:'Share Tech Mono',monospace; white-space:nowrap;
+}
+.live-dot { width:7px; height:7px; background:var(--green); border-radius:50%; animation:blink 1.2s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+/* PAGES */
+.page { display:none; padding:16px; position:relative; z-index:1; max-width:520px; margin:0 auto; }
+.page.active { display:block; animation:fadeUp 0.4s ease; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+/* TICKER */
+.ticker-bar {
+  background:var(--card); border:1px solid var(--border); border-radius:10px;
+  padding:10px 0; margin-bottom:14px; overflow:hidden;
+}
+.ticker-scroll { display:flex; gap:32px; animation:scroll 20s linear infinite; white-space:nowrap; padding:0 16px; }
+@keyframes scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+.ticker-item { display:flex; align-items:center; gap:8px; font-family:'Share Tech Mono',monospace; font-size:12px; }
+.t-name { color:var(--muted); }
+.t-price { color:var(--text); font-weight:700; }
+.up { color:var(--green); }
+.dn { color:var(--red); }
+
+/* CARD */
+.card {
+  background:var(--card); border:1px solid var(--border); border-radius:14px;
+  padding:16px; position:relative; overflow:hidden; margin-bottom:14px;
+}
+.card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg,transparent,rgba(0,255,136,0.3),transparent);
+}
+.card-title {
+  font-size:11px; letter-spacing:2px; text-transform:uppercase;
+  color:var(--muted); margin-bottom:12px; display:flex; align-items:center; gap:8px;
+}
+.section-head {
+  font-size:15px; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+  color:var(--green); display:flex; align-items:center; gap:8px;
+  padding-bottom:10px; border-bottom:1px solid var(--border); margin-bottom:14px;
+}
+
+/* PREDICTION */
+.pred-box {
+  background:var(--card2); border-radius:12px; padding:18px;
+  text-align:center; margin-bottom:12px; border:1px solid var(--border);
+  transition:all 0.3s;
+}
+.pred-box.bullish { border-color:rgba(0,255,136,0.3); box-shadow:0 0 30px rgba(0,255,136,0.08); }
+.pred-box.bearish { border-color:rgba(255,59,107,0.3); box-shadow:0 0 30px rgba(255,59,107,0.08); }
+.pred-label { font-size:11px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; margin-bottom:6px; }
+.pred-val { font-family:'Orbitron',monospace; font-size:26px; font-weight:900; letter-spacing:3px; }
+.pred-val.bullish { color:var(--green); text-shadow:0 0 25px rgba(0,255,136,0.5); }
+.pred-val.bearish { color:var(--red); text-shadow:0 0 25px rgba(255,59,107,0.5); }
+.pred-sub { font-size:13px; color:var(--muted); margin-top:6px; }
+
+/* PARTICIPANTS */
+.p-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
+.p-card {
+  background:var(--card2); border:1px solid var(--border); border-radius:12px;
+  padding:14px 10px; text-align:center; cursor:pointer; transition:all 0.3s;
+  position:relative; overflow:hidden;
+}
+.p-card::after {
+  content:''; position:absolute; bottom:0; left:0; right:0; height:2px; border-radius:0 0 12px 12px;
+}
+.p-card.bullish::after { background:var(--green); }
+.p-card.bearish::after { background:var(--red); }
+.p-card.neutral::after { background:var(--yellow); }
+.p-card.bullish:hover { box-shadow:0 0 20px rgba(0,255,136,0.2); border-color:rgba(0,255,136,0.3); transform:translateY(-2px); }
+.p-card.bearish:hover { box-shadow:0 0 20px rgba(255,59,107,0.2); border-color:rgba(255,59,107,0.3); transform:translateY(-2px); }
+.p-label { font-size:10px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; margin-bottom:8px; font-family:'Share Tech Mono',monospace; }
+.p-emoji { font-size:22px; margin-bottom:6px; }
+.p-status { font-size:20px; font-weight:700; letter-spacing:1px; margin-bottom:2px; }
+.p-status.bullish { color:var(--green); }
+.p-status.bearish { color:var(--red); }
+.p-status.neutral { color:var(--yellow); }
+.p-view { font-size:11px; color:var(--muted); }
+.p-amount { font-size:13px; font-weight:700; font-family:'Share Tech Mono',monospace; margin-top:4px; }
+.p-amount.green { color:var(--green); }
+.p-amount.red { color:var(--red); }
+
+/* NET BAR */
+.net-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.net-name { font-size:12px; font-family:'Share Tech Mono',monospace; width:55px; color:var(--text); }
+.bar-bg { flex:1; height:7px; background:var(--border); border-radius:4px; overflow:hidden; }
+.bar-fill { height:100%; border-radius:4px; transition:width 1.2s ease; }
+.bar-fill.g { background:linear-gradient(90deg,#00ff88,#00bcd4); }
+.bar-fill.r { background:linear-gradient(90deg,#ff3b6b,#ff6b35); }
+.net-val { font-size:12px; font-weight:700; font-family:'Share Tech Mono',monospace; width:65px; text-align:right; }
+.net-val.g { color:var(--green); }
+.net-val.r { color:var(--red); }
+
+/* SIGNAL BOX */
+.signal-box {
+  background:var(--card2); border:1px solid var(--border); border-radius:12px;
+  padding:16px; text-align:center; margin-top:4px;
+}
+.sig-label { font-size:11px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; margin-bottom:6px; }
+.sig-val { font-family:'Orbitron',monospace; font-size:24px; font-weight:900; letter-spacing:3px; }
+.sig-val.bullish { color:var(--green); text-shadow:0 0 20px rgba(0,255,136,0.5); }
+.sig-val.bearish { color:var(--red); text-shadow:0 0 20px rgba(255,59,107,0.5); }
+.sig-val.neutral { color:var(--yellow); }
+.sig-sub { font-size:12px; color:var(--muted); margin-top:4px; }
+
+/* LEVELS */
+.levels-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.lv-item { background:var(--card2); border:1px solid var(--border); border-radius:10px; padding:12px; text-align:center; }
+.lv-label { font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; margin-bottom:5px; }
+.lv-val { font-size:20px; font-weight:700; font-family:'Share Tech Mono',monospace; }
+.lv-item.r2 .lv-val { color:#ff3b6b; }
+.lv-item.r1 .lv-val { color:#ff6b6b; }
+.lv-item.pv .lv-val { color:var(--yellow); }
+.lv-item.s1 .lv-val { color:#6bff88; }
+.lv-item.s2 .lv-val { color:var(--green); }
+.lv-item.tg .lv-val { color:var(--blue); }
+
+/* VIX */
+.vix-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+.vix-item { background:var(--card2); border:1px solid var(--border); border-radius:10px; padding:12px; text-align:center; }
+.vix-lbl { font-size:10px; letter-spacing:1px; color:var(--muted); text-transform:uppercase; margin-bottom:6px; }
+.vix-val { font-size:22px; font-weight:700; font-family:'Share Tech Mono',monospace; }
+
+/* OI */
+.tabs { display:flex; gap:8px; margin-bottom:12px; }
+.tab { flex:1; padding:8px; text-align:center; border-radius:8px; font-size:12px; font-weight:600; letter-spacing:1px; cursor:pointer; background:var(--card2); border:1px solid var(--border); color:var(--muted); transition:all 0.2s; }
+.tab.active { background:rgba(0,255,136,0.08); border-color:rgba(0,255,136,0.3); color:var(--green); }
+.oi-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border); }
+.oi-row:last-child { border-bottom:none; }
+.oi-lbl { font-size:13px; color:var(--muted); }
+.oi-val { font-size:14px; font-weight:700; font-family:'Share Tech Mono',monospace; }
+
+/* GANN */
+.gann-input {
+  width:100%; background:var(--card2); border:1px solid var(--border);
+  border-radius:10px; padding:12px 16px; color:var(--text);
+  font-family:'Rajdhani',sans-serif; font-size:16px; margin-bottom:10px;
+}
+.gann-input:focus { outline:none; border-color:rgba(0,255,136,0.4); box-shadow:0 0 10px rgba(0,255,136,0.1); }
+.btn-primary {
+  width:100%; padding:13px; background:linear-gradient(135deg,rgba(0,255,136,0.15),rgba(56,189,248,0.15));
+  border:1px solid rgba(0,255,136,0.35); border-radius:10px; color:var(--green);
+  font-family:'Rajdhani',sans-serif; font-size:15px; font-weight:700; letter-spacing:2px;
+  text-transform:uppercase; cursor:pointer; transition:all 0.3s;
+}
+.btn-primary:hover { background:linear-gradient(135deg,rgba(0,255,136,0.25),rgba(56,189,248,0.25)); box-shadow:0 0 20px rgba(0,255,136,0.2); }
+.gann-table { width:100%; border-collapse:collapse; margin-top:12px; }
+.gann-table th { font-size:11px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; padding:8px; border-bottom:1px solid var(--border); text-align:left; }
+.gann-table td { padding:9px 8px; border-bottom:1px solid rgba(26,37,64,0.5); font-family:'Share Tech Mono',monospace; font-size:13px; }
+.gann-table tr:hover td { background:rgba(0,255,136,0.03); }
+
+/* GLOBAL INDICES */
+.gi-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border); }
+.gi-row:last-child { border-bottom:none; }
+.gi-name { font-size:14px; font-weight:600; }
+.gi-right { text-align:right; }
+.gi-val { font-size:15px; font-weight:700; font-family:'Share Tech Mono',monospace; }
+.gi-chg { font-size:12px; font-family:'Share Tech Mono',monospace; }
+
+/* REVERSAL */
+.rev-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.rev-item { background:var(--card2); border:1px solid var(--border); border-radius:10px; padding:14px; text-align:center; }
+.rev-tf { font-size:11px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; margin-bottom:6px; }
+.rev-val { font-size:28px; font-weight:900; font-family:'Orbitron',monospace; }
+.rev-val.bullish { color:var(--green); }
+.rev-val.bearish { color:var(--red); }
+.rev-label { font-size:12px; color:var(--muted); margin-top:4px; }
+
+/* MANUAL UPDATE */
+.inp-select {
+  width:100%; background:var(--card2); border:1px solid var(--border);
+  color:var(--text); padding:9px; border-radius:8px;
+  font-family:'Rajdhani',sans-serif; font-size:14px;
+}
+.inp-select:focus { outline:none; border-color:rgba(0,255,136,0.4); }
+.inp-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+.inp-label { font-size:11px; color:var(--muted); margin-bottom:5px; letter-spacing:1px; text-transform:uppercase; }
+
+/* CLOCK */
+.clock-bar {
+  background:var(--card); border:1px solid var(--border); border-radius:10px;
+  padding:10px 16px; margin-bottom:14px;
+  display:flex; justify-content:space-between; align-items:center;
+}
+.clock-date { font-size:13px; color:var(--muted); }
+.clock-time { font-family:'Share Tech Mono',monospace; font-size:18px; font-weight:700; color:var(--green); letter-spacing:2px; }
+.market-status { font-size:12px; padding:4px 10px; border-radius:20px; font-weight:600; }
+.market-open { background:rgba(0,255,136,0.1); color:var(--green); border:1px solid rgba(0,255,136,0.3); }
+.market-closed { background:rgba(255,59,107,0.1); color:var(--red); border:1px solid rgba(255,59,107,0.3); }
+
+/* DIVIDER */
+.divider { height:1px; background:var(--border); margin:14px 0; }
+
+/* FOOTER */
+.footer {
+  background:var(--card); border-top:1px solid var(--border);
+  padding:20px 16px; text-align:center; position:relative; z-index:1;
+  margin-top:20px;
+}
+.footer-logo { font-family:'Orbitron',monospace; font-size:18px; font-weight:900; background:linear-gradient(90deg,var(--green),var(--blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:8px; }
+.footer-disc { font-size:11px; color:var(--muted); line-height:1.6; max-width:400px; margin:0 auto; }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+  <div class="nav-logo">TradeX⚡Pro</div>
+  <div class="nav-tabs">
+    <div class="nav-tab active" onclick="showPage('home',this)">🏠 Home</div>
+    <div class="nav-tab" onclick="showPage('participants',this)">👥 Participants</div>
+    <div class="nav-tab" onclick="showPage('levels',this)">📊 Levels</div>
+    <div class="nav-tab" onclick="showPage('oi',this)">🔥 OI</div>
+    <div class="nav-tab" onclick="showPage('gann',this)">⚙️ Gann</div>
+    <div class="nav-tab" onclick="showPage('global',this)">🌍 Global</div>
+    <div class="nav-tab" onclick="showPage('update',this)">✏️ Update</div>
+  </div>
+  <div class="live-badge"><div class="live-dot"></div><span id="navTime">--:--</span></div>
+</div>
+
+<!-- HOME PAGE -->
+<div class="page active" id="page-home">
+
+  <!-- Ticker -->
+  <div class="ticker-bar">
+    <div class="ticker-scroll" id="ticker"></div>
+  </div>
+
+  <!-- Clock -->
+  <div class="clock-bar">
+    <div class="clock-date" id="clockDate">--</div>
+    <div class="clock-time" id="clockTime">--:--:--</div>
+    <div class="market-status" id="mktStatus">--</div>
+  </div>
+
+  <!-- Next Day Prediction -->
+  <div class="card">
+    <div class="section-head">🎯 Next Day Final Prediction</div>
+    <div class="pred-box bearish" id="predBox">
+      <div class="pred-label">NIFTY || BANKNIFTY || SENSEX</div>
+      <div class="pred-val bearish" id="predVal">⚠ BEARISH</div>
+      <div class="pred-sub" id="predSub">Based on FII-DII Data Decoding</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:4px;">
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center;">
+        <div style="font-size:10px;letter-spacing:2px;color:var(--muted);margin-bottom:5px;">NIFTY</div>
+        <div class="dn" style="font-size:18px;font-weight:700;font-family:'Share Tech Mono',monospace;" id="nifty-pred">Bearish</div>
+      </div>
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center;">
+        <div style="font-size:10px;letter-spacing:2px;color:var(--muted);margin-bottom:5px;">BANKNIFTY</div>
+        <div class="dn" style="font-size:18px;font-weight:700;font-family:'Share Tech Mono',monospace;" id="bnk-pred">Bearish</div>
+      </div>
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center;">
+        <div style="font-size:10px;letter-spacing:2px;color:var(--muted);margin-bottom:5px;">SENSEX</div>
+        <div class="dn" style="font-size:18px;font-weight:700;font-family:'Share Tech Mono',monospace;" id="snx-pred">Bearish</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIX -->
+  <div class="card">
+    <div class="section-head">⚡ India VIX & Daily Range</div>
+    <div class="vix-grid">
+      <div class="vix-item">
+        <div class="vix-lbl">India VIX</div>
+        <div class="vix-val" style="color:var(--yellow);" id="vixVal">14.82</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;">Volatility</div>
+      </div>
+      <div class="vix-item">
+        <div class="vix-lbl">Max Upside</div>
+        <div class="vix-val up" id="vixUp">+1.2%</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;">Expected</div>
+      </div>
+      <div class="vix-item">
+        <div class="vix-lbl">Max Downside</div>
+        <div class="vix-val dn" id="vixDn">-1.1%</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;">Expected</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reversal -->
+  <div class="card">
+    <div class="section-head">🔄 Expected Reversal (Bars)</div>
+    <div class="rev-grid">
+      <div class="rev-item">
+        <div class="rev-tf">15 Min Bars</div>
+        <div class="rev-val bearish" id="rev15">6</div>
+        <div class="rev-label">~1.5 Hours</div>
+      </div>
+      <div class="rev-item">
+        <div class="rev-tf">5 Min Bars</div>
+        <div class="rev-val bullish" id="rev5">12</div>
+        <div class="rev-label">~1 Hour</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- PARTICIPANTS PAGE -->
+<div class="page" id="page-participants">
+
+  <div class="clock-bar">
+    <div class="clock-date" id="pDate">--</div>
+    <div class="clock-time" id="pTime">--:--:--</div>
+    <div class="market-status" id="pMkt">--</div>
+  </div>
+
+  <div class="card">
+    <div class="section-head">👥 Participants Data</div>
+    <div class="p-grid">
+      <div class="p-card bullish" id="pc-client">
+        <div class="p-label">CLIENT</div>
+        <div class="p-emoji">👤</div>
+        <div class="p-status bullish" id="ps-client">Bullish</div>
+        <div class="p-view">View: Bullish</div>
+        <div class="p-amount green" id="pa-client">+4,820 Cr</div>
+      </div>
+      <div class="p-card bearish" id="pc-dii">
+        <div class="p-label">DII</div>
+        <div class="p-emoji">🏦</div>
+        <div class="p-status bearish" id="ps-dii">Bearish</div>
+        <div class="p-view">View: Bearish</div>
+        <div class="p-amount red" id="pa-dii">-2,340 Cr</div>
+      </div>
+      <div class="p-card bearish" id="pc-fii">
+        <div class="p-label">FII</div>
+        <div class="p-emoji">🌍</div>
+        <div class="p-status bearish" id="ps-fii">Bearish</div>
+        <div class="p-view">View: Bearish</div>
+        <div class="p-amount red" id="pa-fii">-5,670 Cr</div>
+      </div>
+      <div class="p-card bearish" id="pc-pro">
+        <div class="p-label">PRO</div>
+        <div class="p-emoji">🎯</div>
+        <div class="p-status bearish" id="ps-pro">Bearish</div>
+        <div class="p-view">View: Bearish</div>
+        <div class="p-amount red" id="pa-pro">-1,890 Cr</div>
+      </div>
+    </div>
+
+    <!-- Net Bars -->
+    <div class="section-head" style="margin-top:4px;">📊 Net Long/Short (Cr)</div>
+    <div class="net-row">
+      <div class="net-name">CLIENT</div>
+      <div class="bar-bg"><div class="bar-fill g" id="nb-client" style="width:72%"></div></div>
+      <div class="net-val g" id="nv-client">+4,820</div>
+    </div>
+    <div class="net-row">
+      <div class="net-name">DII</div>
+      <div class="bar-bg"><div class="bar-fill r" id="nb-dii" style="width:40%"></div></div>
+      <div class="net-val r" id="nv-dii">-2,340</div>
+    </div>
+    <div class="net-row">
+      <div class="net-name">FII</div>
+      <div class="bar-bg"><div class="bar-fill r" id="nb-fii" style="width:65%"></div></div>
+      <div class="net-val r" id="nv-fii">-5,670</div>
+    </div>
+    <div class="net-row">
+      <div class="net-name">PRO</div>
+      <div class="bar-bg"><div class="bar-fill r" id="nb-pro" style="width:35%"></div></div>
+      <div class="net-val r" id="nv-pro">-1,890</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Overall Signal -->
+    <div class="signal-box">
+      <div class="sig-label">Overall Market Signal</div>
+      <div class="sig-val bearish" id="overallSig">⚠ BEARISH</div>
+      <div class="sig-sub" id="overallSub">3 Bearish vs 1 Bullish — Stay Cautious!</div>
+    </div>
+  </div>
+</div>
+
+<!-- LEVELS PAGE -->
+<div class="page" id="page-levels">
+  <div class="card">
+    <div class="section-head">📈 Intraday Levels</div>
+    <div class="levels-grid">
+      <div class="lv-item r2"><div class="lv-label">Resistance 2</div><div class="lv-val" id="lv-r2">23,850</div></div>
+      <div class="lv-item r1"><div class="lv-label">Resistance 1</div><div class="lv-val" id="lv-r1">23,650</div></div>
+      <div class="lv-item pv"><div class="lv-label">Pivot</div><div class="lv-val" id="lv-pv">23,450</div></div>
+      <div class="lv-item tg"><div class="lv-label">Target</div><div class="lv-val" id="lv-tg">23,750</div></div>
+      <div class="lv-item s1"><div class="lv-label">Support 1</div><div class="lv-val" id="lv-s1">23,250</div></div>
+      <div class="lv-item s2"><div class="lv-label">Support 2</div><div class="lv-val" id="lv-s2">23,050</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="section-head">🏦 BankNifty Levels</div>
+    <div class="levels-grid">
+      <div class="lv-item r2"><div class="lv-label">Resistance 2</div><div class="lv-val" id="bnlv-r2">50,200</div></div>
+      <div class="lv-item r1"><div class="lv-label">Resistance 1</div><div class="lv-val" id="bnlv-r1">49,800</div></div>
+      <div class="lv-item pv"><div class="lv-label">Pivot</div><div class="lv-val" id="bnlv-pv">49,400</div></div>
+      <div class="lv-item tg"><div class="lv-label">Target</div><div class="lv-val" id="bnlv-tg">50,000</div></div>
+      <div class="lv-item s1"><div class="lv-label">Support 1</div><div class="lv-val" id="bnlv-s1">49,000</div></div>
+      <div class="lv-item s2"><div class="lv-label">Support 2</div><div class="lv-val" id="bnlv-s2">48,600</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- OI PAGE -->
+<div class="page" id="page-oi">
+  <div class="card">
+    <div class="section-head">🔥 Open Interest Analysis</div>
+    <div class="tabs">
+      <div class="tab active" onclick="setOITab(this,'call')">CALL OI</div>
+      <div class="tab" onclick="setOITab(this,'put')">PUT OI</div>
+      <div class="tab" onclick="setOITab(this,'pcr')">PCR</div>
+      <div class="tab" onclick="setOITab(this,'bnk')">BANKNIFTY</div>
+    </div>
+    <div id="oiContent"></div>
+  </div>
+  <div class="card">
+    <div class="section-head">⚡ Max Pain & Key Strikes</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center;">
+        <div style="font-size:10px;letter-spacing:2px;color:var(--muted);margin-bottom:5px;">MAX PAIN</div>
+        <div style="font-size:22px;font-weight:700;font-family:'Share Tech Mono',monospace;color:var(--yellow);">23,400</div>
+      </div>
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center;">
+        <div style="font-size:10px;letter-spacing:2px;color:var(--muted);margin-bottom:5px;">PCR SIGNAL</div>
+        <div class="dn" style="font-size:22px;font-weight:700;font-family:'Share Tech Mono',monospace;">SELL</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GANN PAGE -->
+<div class="page" id="page-gann">
+  <div class="card">
+    <div class="section-head">⚙️ Gann Square of 9</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:12px;">Enter current price to calculate support & resistance levels using Gann methodology.</div>
+    <input class="gann-input" type="number" id="gannPrice" placeholder="Enter Price (e.g. 23450)" />
+    <button class="btn-primary" onclick="calcGann()">⚡ Calculate Gann Levels</button>
+    <div id="gannResult"></div>
+  </div>
+</div>
+
+<!-- GLOBAL PAGE -->
+<div class="page" id="page-global">
+  <div class="card">
+    <div class="section-head">🌍 Global Indices</div>
+    <div id="globalList"></div>
+    <div class="divider"></div>
+    <div style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;">
+      <div style="font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:6px;">OVERALL GLOBAL SENTIMENT</div>
+      <div style="font-family:'Orbitron',monospace;font-size:22px;font-weight:900;" class="dn" id="globalSentiment">BEARISH</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="section-head">💱 SGX Nifty</div>
+    <div style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center;">
+      <div style="font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:6px;">SGX NIFTY LIVE</div>
+      <div style="font-size:28px;font-weight:700;font-family:'Share Tech Mono',monospace;color:var(--text);" id="sgxVal">23,412</div>
+      <div class="dn" style="font-size:14px;font-family:'Share Tech Mono',monospace;margin-top:4px;" id="sgxChg">-38 (-0.16%)</div>
+    </div>
+  </div>
+</div>
+
+<!-- UPDATE PAGE -->
+<div class="page" id="page-update">
+  <div class="card">
+    <div class="section-head">✏️ Manual Data Update</div>
+
+    <!-- Participants -->
+    <div style="font-size:13px;font-weight:600;color:var(--muted);letter-spacing:1px;margin-bottom:10px;text-transform:uppercase;">Participants Sentiment</div>
+    <div class="inp-grid">
+      <div><div class="inp-label">Client</div><select class="inp-select" id="inp-client"><option value="bullish">Bullish 🚀</option><option value="bearish" selected>Bearish 📉</option><option value="neutral">Neutral 😐</option></select></div>
+      <div><div class="inp-label">DII</div><select class="inp-select" id="inp-dii"><option value="bullish">Bullish 🚀</option><option value="bearish" selected>Bearish 📉</option><option value="neutral">Neutral 😐</option></select></div>
+      <div><div class="inp-label">FII</div><select class="inp-select" id="inp-fii"><option value="bullish">Bullish 🚀</option><option value="bearish" selected>Bearish 📉</option><option value="neutral">Neutral 😐</option></select></div>
+      <div><div class="inp-label">PRO</div><select class="inp-select" id="inp-pro"><option value="bullish">Bullish 🚀</option><option value="bearish" selected>Bearish 📉</option><option value="neutral">Neutral 😐</option></select></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Net Amounts -->
+    <div style="font-size:13px;font-weight:600;color:var(--muted);letter-spacing:1px;margin-bottom:10px;text-transform:uppercase;">Net Amount (Cr) — use - for short</div>
+    <div class="inp-grid">
+      <div><div class="inp-label">Client Cr</div><input class="gann-input" id="amt-client" type="number" value="4820" style="margin-bottom:0;"></div>
+      <div><div class="inp-label">DII Cr</div><input class="gann-input" id="amt-dii" type="number" value="-2340" style="margin-bottom:0;"></div>
+      <div><div class="inp-label">FII Cr</div><input class="gann-input" id="amt-fii" type="number" value="-5670" style="margin-bottom:0;"></div>
+      <div><div class="inp-label">PRO Cr</div><input class="gann-input" id="amt-pro" type="number" value="-1890" style="margin-bottom:0;"></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Nifty Levels -->
+    <div style="font-size:13px;font-weight:600;color:var(--muted);letter-spacing:1px;margin-bottom:10px;text-transform:uppercase;">Nifty Levels</div>
+    <div class="inp-grid">
+      <div><div class="inp-label">R2</div><input class="gann-input" id="upd-r2" type="number" value="23850" style="margin-bottom:0;"></div>
+      <div><div class="inp-label">R1</div><input class="gann-input" id="upd-r1" type="number" value="23650" style="margin-bottom:0;"></div>
+      <div><div class="inp-label">Pivot</div><input class="gann-input" id="upd-pv" type="number" value="23450" style="margin-bottom:0;"></div>
+      <div><div class="inp-label">Target</div><input class="gann-input" id="upd-tg" type="number" value="23750" style="margin-bottom:0;"></div>
+      <div><div class="inp-label">S1</div><input class="gann-input" id="upd-s1" type="number" value="23250" style="margin-bottom:0;"></div>
+      <div><div class="inp-label">S2</div><input class="gann-input" id="upd-s2" type="number" value="23050" style="margin-bottom:0;"></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- VIX + Reversal -->
+    <div style="font-size:13px;font-weight:600;color:var(--muted);letter-spacing:1px;margin-bottom:10px;text-transform:uppercase;">VIX & Reversal</div>
+    <div class="inp-grid">
+      <div><div class="inp-label">India VIX</div><input class="gann-input" id="upd-vix" type="number" value="14.82" step="0.01" style="margin-bottom:0;"></div>
+      <div><div class="inp-label">15min Bars</div><input class="gann-input" id="upd-rev15" type="number" value="6" style="margin-bottom:0;"></div>
+      <div><div class="inp-label">5min Bars</div><input class="gann-input" id="upd-rev5" type="number" value="12" style="margin-bottom:0;"></div>
+      <div><div class="inp-label">Rev Direction</div>
+        <select class="inp-select" id="upd-revdir">
+          <option value="bullish">Bullish</option>
+          <option value="bearish" selected>Bearish</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="margin-top:14px;">
+      <button class="btn-primary" onclick="applyUpdate()">⚡ Apply All Updates</button>
+    </div>
+    <div id="updateMsg" style="text-align:center;margin-top:10px;font-size:14px;color:var(--green);display:none;">✅ Data Updated Successfully!</div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-logo">TradeX⚡Pro</div>
+  <div class="footer-disc">
+    ⚠️ NOT SEBI Registered. All data is for EDUCATIONAL purposes only.<br>
+    Do NOT take this as buy/sell recommendations. Trade at your own risk.
+  </div>
+</div>
+
+<script>
+// ===== CLOCK =====
+function updateClock() {
+  const now = new Date();
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const dateStr = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+  const timeStr = now.toTimeString().slice(0,8);
+  const h = now.getHours(), m = now.getMinutes();
+  const isOpen = (h===9&&m>=15)||(h>9&&h<15)||(h===15&&m<=30);
+  const mktHtml = isOpen
+    ? '<span class="market-status market-open">🟢 OPEN</span>'
+    : '<span class="market-status market-closed">🔴 CLOSED</span>';
+
+  ['clockDate','pDate'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=dateStr; });
+  ['clockTime','pTime'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=timeStr; });
+  ['mktStatus','pMkt'].forEach(id => { const el=document.getElementById(id); if(el) el.innerHTML=mktHtml; });
+  const navT = document.getElementById('navTime'); if(navT) navT.textContent = timeStr.slice(0,5);
+}
+setInterval(updateClock,1000); updateClock();
+
+// ===== TICKER =====
+const tickerData = [
+  {name:'NIFTY',price:'23,412',chg:'-38 (-0.16%)',up:false},
+  {name:'BANKNIFTY',price:'49,234',chg:'-124 (-0.25%)',up:false},
+  {name:'SENSEX',price:'77,120',chg:'-145 (-0.19%)',up:false},
+  {name:'RELIANCE',price:'1,245',chg:'+12 (+0.97%)',up:true},
+  {name:'TCS',price:'3,890',chg:'-45 (-1.15%)',up:false},
+  {name:'HDFCBANK',price:'1,678',chg:'+8 (+0.48%)',up:true},
+  {name:'INFY',price:'1,456',chg:'-22 (-1.49%)',up:false},
+  {name:'SIEMENS',price:'3,206',chg:'+98 (+3.15%)',up:true},
+];
+
+function buildTicker() {
+  const t = document.getElementById('ticker');
+  if(!t) return;
+  let html = '';
+  [...tickerData,...tickerData].forEach(d => {
+    html += `<div class="ticker-item"><span class="t-name">${d.name}</span><span class="t-price">${d.price}</span><span class="${d.up?'up':'dn'}">${d.chg}</span></div>`;
+  });
+  t.innerHTML = html;
+}
+buildTicker();
+
+// ===== PAGES =====
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  el.classList.add('active');
+}
+
+// ===== OI DATA =====
+const oiTabs = {
+  call: [
+    ['Max Call OI Strike','24,000','dn'],['2nd Max OI','23,800','dn'],
+    ['Call OI Change','+12.4L','dn'],['Call Writing','Strong 🐻','dn'],['Interpretation','Resistance at 24,000','dn']
+  ],
+  put: [
+    ['Max Put OI Strike','23,000','up'],['2nd Max OI','23,200','up'],
+    ['Put OI Change','-8.2L','dn'],['Put Unwinding','Active 🐻','dn'],['Interpretation','Support at 23,000','up']
+  ],
+  pcr: [
+    ['PCR (OI)','0.82','dn'],['PCR (Volume)','0.76','dn'],
+    ['Sentiment','Bearish','dn'],['PCR Zone','Sell Zone','dn'],['Signal','⚠ Weak Market','dn']
+  ],
+  bnk: [
+    ['BankNifty Call OI','50,000','dn'],['BankNifty Put OI','49,000','up'],
+    ['BN PCR','0.79','dn'],['Max Pain','49,400',''],['Signal','Bearish','dn']
+  ]
+};
+
+function setOITab(el, type) {
+  document.querySelectorAll('#page-oi .tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const rows = oiTabs[type];
+  document.getElementById('oiContent').innerHTML = rows.map(r =>
+    `<div class="oi-row"><span class="oi-lbl">${r[0]}</span><span class="oi-val ${r[2]}">${r[1]}</span></div>`
+  ).join('');
+}
+setOITab(document.querySelector('#page-oi .tab'), 'call');
+
+// ===== GLOBAL INDICES =====
+const globalData = [
+  {name:'DOW JONES 🇺🇸',val:'38,242',chg:'-124 (-0.32%)',up:false},
+  {name:'NASDAQ 🇺🇸',val:'15,890',chg:'-210 (-1.30%)',up:false},
+  {name:'NIKKEI 🇯🇵',val:'38,560',chg:'+145 (+0.38%)',up:true},
+  {name:'HANG SENG 🇭🇰',val:'16,780',chg:'-89 (-0.53%)',up:false},
+  {name:'DAX 🇩🇪',val:'17,234',chg:'+56 (+0.33%)',up:true},
+  {name:'FTSE 🇬🇧',val:'7,890',chg:'-34 (-0.43%)',up:false},
+  {name:'CRUDE OIL 🛢️',val:'$78.4',chg:'+0.8 (+1.02%)',up:true},
+  {name:'GOLD 🥇',val:'$2,024',chg:'-12 (-0.59%)',up:false},
+];
+
+function buildGlobal() {
+  const el = document.getElementById('globalList');
+  if(!el) return;
+  el.innerHTML = globalData.map(d =>
+    `<div class="gi-row">
+      <div class="gi-name">${d.name}</div>
+      <div class="gi-right">
+        <div class="gi-val">${d.val}</div>
+        <div class="gi-chg ${d.up?'up':'dn'}">${d.chg}</div>
+      </div>
+    </div>`
+  ).join('');
+}
+buildGlobal();
+
+// ===== GANN CALCULATOR =====
+function calcGann() {
+  const price = parseFloat(document.getElementById('gannPrice').value);
+  if(!price) { alert('Price daalo!'); return; }
+  const sqrtP = Math.sqrt(price);
+  const degrees = [45, 90, 135, 180, 225, 270, 315, 360];
+  const unit = 1 / 8;
+
+  let resHtml = '<table class="gann-table"><thead><tr><th>Degree</th><th>Resistance</th><th>Support</th></tr></thead><tbody>';
+  degrees.forEach(deg => {
+    const step = deg * unit / 360;
+    const res = Math.pow(sqrtP + step, 2).toFixed(2);
+    const sup = Math.pow(sqrtP - step, 2).toFixed(2);
+    resHtml += `<tr><td style="color:var(--muted)">${deg}°</td><td class="up">${res}</td><td class="dn">${sup}</td></tr>`;
+  });
+  resHtml += '</tbody></table>';
+  document.getElementById('gannResult').innerHTML = resHtml;
+}
+
+// ===== APPLY UPDATE =====
+function applyUpdate() {
+  const participants = ['client','dii','fii','pro'];
+  let bull=0, bear=0;
+
+  participants.forEach(p => {
+    const val = document.getElementById('inp-'+p).value;
+    const amt = parseFloat(document.getElementById('amt-'+p).value) || 0;
+    const isPos = amt >= 0;
+
+    // Update participant card
+    const card = document.getElementById('pc-'+p);
+    const status = document.getElementById('ps-'+p);
+    const amount = document.getElementById('pa-'+p);
+    card.className = `p-card ${val}`;
+    status.className = `p-status ${val}`;
+    status.textContent = val.charAt(0).toUpperCase()+val.slice(1);
+    amount.className = `p-amount ${isPos?'green':'red'}`;
+    amount.textContent = (isPos?'+':'')+amt.toLocaleString()+' Cr';
+
+    // Net bars
+    const maxAmt = 8000;
+    const pct = Math.min(Math.abs(amt)/maxAmt*100, 100);
+    document.getElementById('nb-'+p).style.width = pct+'%';
+    document.getElementById('nb-'+p).className = `bar-fill ${isPos?'g':'r'}`;
+    document.getElementById('nv-'+p).textContent = (isPos?'+':'')+amt.toLocaleString();
+    document.getElementById('nv-'+p).className = `net-val ${isPos?'g':'r'}`;
+
+    if(val==='bullish') bull++; else if(val==='bearish') bear++;
+  });
+
+  // Overall signal
+  const sig = document.getElementById('overallSig');
+  const sub = document.getElementById('overallSub');
+  const pred = document.getElementById('predVal');
+  const predBox = document.getElementById('predBox');
+  if(bull > bear) {
+    sig.textContent='🚀 BULLISH'; sig.className='sig-val bullish';
+    sub.textContent=`${bull} Bullish vs ${bear} Bearish — Buy Zone!`;
+    pred.textContent='🚀 BULLISH'; pred.className='pred-val bullish';
+    predBox.className='pred-box bullish';
+  } else if(bear > bull) {
+    sig.textContent='⚠ BEARISH'; sig.className='sig-val bearish';
+    sub.textContent=`${bear} Bearish vs ${bull} Bullish — Stay Cautious!`;
+    pred.textContent='⚠ BEARISH'; pred.className='pred-val bearish';
+    predBox.className='pred-box bearish';
+  } else {
+    sig.textContent='⏸ NEUTRAL'; sig.className='sig-val neutral';
+    sub.textContent='Mixed Signals — Wait & Watch!';
+  }
+
+  // Levels
+  ['r2','r1','pv','tg','s1','s2'].forEach(k => {
+    const v = document.getElementById('upd-'+k).value;
+    const el = document.getElementById('lv-'+k);
+    if(el && v) el.textContent = parseFloat(v).toLocaleString();
+  });
+
+  // VIX
+  const vix = parseFloat(document.getElementById('upd-vix').value);
+  if(vix) {
+    document.getElementById('vixVal').textContent = vix.toFixed(2);
+    const move = (vix / Math.sqrt(252) * 100).toFixed(1);
+    document.getElementById('vixUp').textContent = '+'+move+'%';
+    document.getElementById('vixDn').textContent = '-'+move+'%';
+  }
+
+  // Reversal
+  const rev15 = document.getElementById('upd-rev15').value;
+  const rev5 = document.getElementById('upd-rev5').value;
+  const revDir = document.getElementById('upd-revdir').value;
+  if(rev15) { document.getElementById('rev15').textContent = rev15; document.getElementById('rev15').className = 'rev-val '+revDir; }
+  if(rev5)  { document.getElementById('rev5').textContent = rev5;  document.getElementById('rev5').className = 'rev-val '+revDir; }
+
+  // Show success msg
+  const msg = document.getElementById('updateMsg');
+  msg.style.display = 'block';
+  setTimeout(() => msg.style.display='none', 3000);
+}
+</script>
+</body>
+</html>
