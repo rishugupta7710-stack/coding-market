@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<title>Coding Market Pro — MR. RISHU RAJ</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1b2a;--bg2:#0a1520;--card:#132333;--card2:#1a2d42;
+  --border:#1e3450;--acc:#00c896;
+  --g:#00e676;--r:#ff4757;--y:#ffa502;--p:#a855f7;--b:#1e90ff;--c:#00d4ff;
+  --tx:#e8f0fe;--mu:#5a7a9a;--mu2:#8aaac0;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:200;background:rgba(10,21,32,.97);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);height:62px;display:flex;align-items:center;padding:0 14px;gap:8px}
+.nav-logo{width:42px;height:42px;background:linear-gradient(135deg,var(--acc),var(--b));border-radius:12px;
+  display:flex;align-items:center;justify-content:center;font-size:21px;box-shadow:0 0 22px rgba(0,200,150,.28);flex-shrink:0}
+.nav-tabs{display:flex;gap:2px;flex:1;overflow-x:auto;scrollbar-width:none}
+.nav-tabs::-webkit-scrollbar{display:none}
+.ntab{padding:6px 10px;border-radius:8px;font-size:11px;font-weight:700;white-space:nowrap;cursor:pointer;
+  color:var(--mu2);transition:all .2s;letter-spacing:.3px;border:none;background:none;flex-shrink:0}
+.ntab.on{color:var(--acc);background:rgba(0,200,150,.1)}
+.ntab:hover:not(.on){color:var(--tx);background:var(--card)}
+.nclock{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--acc);letter-spacing:1px;flex-shrink:0}
+.mstat{padding:3px 8px;border-radius:20px;font-size:10px;font-weight:800;flex-shrink:0}
+.mstat.open{background:rgba(0,230,118,.1);color:var(--g);border:1px solid rgba(0,230,118,.2)}
+.mstat.closed{background:rgba(255,71,87,.1);color:var(--r);border:1px solid rgba(255,71,87,.2)}
+.rfbtn{width:36px;height:36px;background:var(--card);border:1px solid var(--border);border-radius:9px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{animation:spin .6s linear}
+
+/* TICKER */
+.ticker{background:rgba(0,200,150,.03);border-bottom:1px solid var(--border);padding:6px 0;overflow:hidden}
+.t-inner{display:flex;animation:tk 55s linear infinite;white-space:nowrap}
+.t-inner:hover{animation-play-state:paused}
+@keyframes tk{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.ti{display:inline-flex;align-items:center;gap:6px;padding:0 16px;border-right:1px solid var(--border);
+  font-family:'Share Tech Mono',monospace;font-size:12px}
+.ttag{background:rgba(255,255,255,.05);padding:1px 5px;border-radius:3px;font-size:9px;color:var(--mu)}
+
+/* PAGES */
+.pg{display:none;max-width:480px;margin:0 auto;padding:13px 12px 70px;animation:fu .25s ease}
+.pg.on{display:block}
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* CARD */
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:13px;position:relative;overflow:hidden}
+.card::after{content:'';position:absolute;top:0;left:15%;right:15%;height:1px;background:linear-gradient(90deg,transparent,rgba(0,200,150,.18),transparent)}
+.ct{font-size:11px;font-weight:800;color:var(--acc);text-transform:uppercase;letter-spacing:2px;
+  display:flex;align-items:center;gap:8px;padding-bottom:13px;border-bottom:1px solid var(--border);margin-bottom:14px}
+
+/* NOTICE */
+.notice{background:var(--card);border:1px solid rgba(0,200,150,.18);border-radius:16px;padding:14px 16px;margin-bottom:13px;text-align:center}
+
+/* PRED */
+.pred-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:26px 18px;margin-bottom:13px;text-align:center}
+.pred-text{font-size:40px;font-weight:900;margin-bottom:12px;line-height:1.1;letter-spacing:-.5px}
+.pred-text.up{color:var(--g);text-shadow:0 0 30px rgba(0,230,118,.3)}
+.pred-text.dn{color:var(--r);text-shadow:0 0 30px rgba(255,71,87,.3)}
+.pred-text.sw{color:var(--y)}
+.pred-badge{display:inline-flex;align-items:center;gap:6px;padding:7px 18px;border-radius:25px;font-size:13px;font-weight:800;margin-top:12px}
+.pred-badge.up{background:rgba(0,230,118,.1);color:var(--g);border:1px solid rgba(0,230,118,.2)}
+.pred-badge.dn{background:rgba(255,71,87,.1);color:var(--r);border:1px solid rgba(255,71,87,.2)}
+.pred-badge.sw{background:rgba(255,165,0,.1);color:var(--y);border:1px solid rgba(255,165,0,.2)}
+
+/* PARTICIPANT CARD */
+.pcard{border-radius:16px;padding:16px;margin-bottom:11px;position:relative;overflow:hidden;border:2px solid}
+.pcard.bull{background:rgba(0,230,118,.04);border-color:rgba(0,230,118,.28)}
+.pcard.bear{background:rgba(255,71,87,.04);border-color:rgba(255,71,87,.28)}
+.pcard.neu{background:rgba(0,212,255,.04);border-color:rgba(0,212,255,.18)}
+.pcard::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px}
+.pcard.bull::after{background:linear-gradient(90deg,transparent,var(--g),transparent)}
+.pcard.bear::after{background:linear-gradient(90deg,transparent,var(--r),transparent)}
+.pcard.neu::after{background:linear-gradient(90deg,transparent,var(--c),transparent)}
+.pcard-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.pcard-lbl{font-size:10px;color:var(--mu2);letter-spacing:2px;text-transform:uppercase;font-weight:800;margin-bottom:5px}
+.pcard-mood{font-size:26px;font-weight:900}
+.pcard-sub{font-size:11px;color:var(--mu2);margin-top:2px}
+.pcard-badge{padding:5px 13px;border-radius:20px;font-size:12px;font-weight:800}
+.p-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.p-cell{background:rgba(0,0,0,.22);border-radius:10px;padding:12px;text-align:center}
+.p-cell-lbl{font-size:9px;color:var(--mu2);letter-spacing:1px;font-weight:800;margin-bottom:6px;text-transform:uppercase}
+.p-cell-val{font-size:20px;font-weight:900;font-family:'Share Tech Mono',monospace}
+
+/* LEVELS */
+.lv-head{font-size:12px;font-weight:800;padding:8px 0;margin-bottom:8px;border-bottom:1px solid;display:flex;align-items:center;gap:6px;letter-spacing:1px}
+.lv-head.res{color:var(--r);border-color:rgba(255,71,87,.2)}
+.lv-head.sup{color:var(--g);border-color:rgba(0,230,118,.2)}
+.lv-item{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;
+  margin-bottom:7px;display:flex;justify-content:space-between;align-items:center;border-left:4px solid transparent}
+.lv-item.res{border-left-color:var(--r)}
+.lv-item.sup{border-left-color:var(--g)}
+.lv-price{font-size:26px;font-weight:900;font-family:'Share Tech Mono',monospace}
+.lv-tag{font-size:12px;font-weight:800;letter-spacing:1px}
+.lv-item.res .lv-tag{color:var(--r)}
+.lv-item.sup .lv-tag{color:var(--g)}
+
+/* VIX */
+.vix-hero{background:linear-gradient(135deg,rgba(168,85,247,.14),rgba(168,85,247,.02));
+  border:1px solid rgba(168,85,247,.28);border-radius:16px;padding:24px;text-align:center;margin-bottom:12px}
+.vix-num{font-size:58px;font-weight:900;color:#c084fc;font-family:'Share Tech Mono',monospace;
+  text-shadow:0 0 30px rgba(168,85,247,.35);line-height:1;margin-bottom:5px}
+.vix-row{background:var(--card2);border:1px solid var(--border);border-radius:13px;
+  padding:18px 16px;margin-bottom:10px;text-align:center}
+.vix-row-val{font-size:32px;font-weight:900;font-family:'Share Tech Mono',monospace}
+
+/* GLOBAL */
+.gi-box{background:var(--card2);border:1px solid var(--border);border-radius:14px;
+  padding:20px 16px;margin-bottom:10px;text-align:center}
+.gi-val{font-size:32px;font-weight:900;font-family:'Share Tech Mono',monospace;margin-bottom:8px}
+.gi-badge{display:inline-block;padding:5px 18px;border-radius:25px;font-size:13px;font-weight:800}
+.gi-badge.up{background:rgba(0,200,150,.13);color:var(--acc);border:1px solid rgba(0,200,150,.22)}
+.gi-badge.dn{background:rgba(255,71,87,.13);color:var(--r);border:1px solid rgba(255,71,87,.22)}
+
+/* HEATMAP */
+.hm{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.hm-cell{border-radius:12px;padding:14px 9px;text-align:center}
+.hm-cell.sup{background:rgba(0,230,118,.15);border:1px solid rgba(0,230,118,.25)}
+.hm-cell.up{background:rgba(0,230,118,.07);border:1px solid rgba(0,230,118,.12)}
+.hm-cell.flat{background:rgba(255,179,0,.07);border:1px solid rgba(255,179,0,.12)}
+.hm-cell.dn{background:rgba(255,71,87,.07);border:1px solid rgba(255,71,87,.12)}
+.hm-cell.sdn{background:rgba(255,71,87,.15);border:1px solid rgba(255,71,87,.25)}
+.hm-name{font-size:12px;font-weight:800;margin-bottom:4px}
+.hm-val{font-size:14px;font-family:'Share Tech Mono',monospace;font-weight:700}
+.hm-cell.sup .hm-name,.hm-cell.up .hm-name,.hm-cell.sup .hm-val,.hm-cell.up .hm-val{color:var(--g)}
+.hm-cell.dn .hm-name,.hm-cell.sdn .hm-name,.hm-cell.dn .hm-val,.hm-cell.sdn .hm-val{color:var(--r)}
+.hm-cell.flat .hm-name,.hm-cell.flat .hm-val{color:var(--y)}
+
+/* OI TABS */
+.tabs{display:flex;gap:5px;margin-bottom:12px}
+.tab{flex:1;padding:9px 3px;text-align:center;border-radius:9px;font-size:11px;font-weight:800;
+  cursor:pointer;background:var(--card2);border:1px solid var(--border);color:var(--mu2);transition:all .2s}
+.tab.on{background:rgba(0,200,150,.09);border-color:rgba(0,200,150,.25);color:var(--acc)}
+.oirow{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid rgba(30,52,80,.5)}
+.oirow:last-child{border-bottom:none}
+
+/* PAISA */
+.paisa-sum{background:linear-gradient(135deg,rgba(255,165,2,.12),rgba(255,165,2,.02));
+  border:2px solid rgba(255,165,2,.3);border-radius:18px;padding:22px;text-align:center;margin-bottom:14px}
+.paisa-total{font-size:50px;font-weight:900;color:var(--y);font-family:'Share Tech Mono',monospace;line-height:1;margin-bottom:4px}
+.pstat-g{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:13px}
+.pstat{background:var(--card2);border:1px solid var(--border);border-radius:13px;padding:14px;text-align:center}
+.pstat-lbl{font-size:10px;color:var(--mu2);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+.pstat-val{font-size:24px;font-weight:900;font-family:'Share Tech Mono',monospace}
+.add-form{background:rgba(0,200,150,.04);border:1px solid rgba(0,200,150,.15);border-radius:16px;padding:16px;margin-bottom:13px}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:10px}
+.flbl{font-size:10px;color:var(--mu2);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;font-weight:700}
+.finp{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:11px 13px;
+  color:var(--tx);font-family:'Share Tech Mono',monospace;font-size:15px;transition:border-color .3s}
+.finp:focus{outline:none;border-color:rgba(0,200,150,.4)}
+.fsel{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:11px 13px;color:var(--tx);font-size:14px}
+.abtn{width:100%;padding:13px;background:rgba(0,200,150,.08);border:1px solid rgba(0,200,150,.22);
+  border-radius:11px;color:var(--acc);font-family:'Inter',sans-serif;font-size:14px;font-weight:800;letter-spacing:1px;cursor:pointer}
+.trade-card{background:var(--card2);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:10px}
+.trow{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(30,52,80,.6)}
+.trow:last-child{border-bottom:none}
+.trow-val{font-size:14px;font-weight:800;font-family:'Share Tech Mono',monospace}
+.pnl-box{border-radius:12px;padding:14px;text-align:center;margin-top:12px}
+.pnl-box.profit{background:rgba(0,230,118,.07);border:1px solid rgba(0,230,118,.18)}
+.pnl-box.loss{background:rgba(255,71,87,.07);border:1px solid rgba(255,71,87,.18)}
+.pnl-box.even{background:rgba(255,179,0,.07);border:1px solid rgba(255,179,0,.18)}
+.pnl-val{font-size:26px;font-weight:900;font-family:'Share Tech Mono',monospace}
+
+/* UPDATE */
+.upd-block{border-radius:13px;padding:14px;margin-bottom:10px;border:1px solid}
+.upd-block.cli{background:rgba(0,230,118,.05);border-color:rgba(0,230,118,.2)}
+.upd-block.fii{background:rgba(255,71,87,.05);border-color:rgba(255,71,87,.2)}
+.upd-block.pro{background:rgba(255,165,0,.05);border-color:rgba(255,165,0,.2)}
+.upd-block.dii{background:rgba(0,212,255,.04);border-color:rgba(0,212,255,.15)}
+.upd-title{font-size:12px;font-weight:800;margin-bottom:10px}
+
+/* ALPHA & LIQUIDITY */
+.sig-hero{border-radius:18px;padding:24px;text-align:center;margin-bottom:14px}
+.sig-hero.buy{background:linear-gradient(135deg,rgba(0,230,118,.15),rgba(0,230,118,.02));border:2px solid rgba(0,230,118,.35)}
+.sig-hero.sell{background:linear-gradient(135deg,rgba(255,71,87,.15),rgba(255,71,87,.02));border:2px solid rgba(255,71,87,.35)}
+.sig-hero.wait{background:linear-gradient(135deg,rgba(255,165,0,.1),rgba(255,165,0,.02));border:2px solid rgba(255,165,0,.25)}
+.sig-pulse{width:85px;height:85px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 14px}
+.sig-pulse.buy{background:rgba(0,230,118,.15);animation:abuy 1.5s infinite}
+.sig-pulse.sell{background:rgba(255,71,87,.15);animation:asell 1.5s infinite}
+.sig-pulse.wait{background:rgba(255,165,0,.1)}
+@keyframes abuy{0%{box-shadow:0 0 0 0 rgba(0,230,118,.5)}70%{box-shadow:0 0 0 22px rgba(0,230,118,0)}100%{box-shadow:0 0 0 0 rgba(0,230,118,0)}}
+@keyframes asell{0%{box-shadow:0 0 0 0 rgba(255,71,87,.5)}70%{box-shadow:0 0 0 22px rgba(255,71,87,0)}100%{box-shadow:0 0 0 0 rgba(255,71,87,0)}}
+.cbox-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
+.cbox{border-radius:12px;padding:13px 10px;text-align:center;border:1px solid}
+.cbox.pass{background:rgba(0,230,118,.07);border-color:rgba(0,230,118,.22)}
+.cbox.fail{background:rgba(255,71,87,.07);border-color:rgba(255,71,87,.22)}
+.cbox.na{background:rgba(100,100,100,.07);border-color:rgba(100,100,100,.15)}
+
+/* GANN */
+.gann-tbl{width:100%;border-collapse:collapse;margin-top:12px}
+.gann-tbl th{font-size:10px;letter-spacing:1px;color:var(--mu2);text-transform:uppercase;padding:9px 5px;border-bottom:1px solid var(--border);font-weight:800}
+.gann-tbl td{padding:11px 5px;border-bottom:1px solid rgba(30,52,80,.4);font-family:'Share Tech Mono',monospace;font-size:14px}
+
+/* SENTIMENT BAR */
+.sent-bar{background:var(--card2);border-left:4px solid var(--acc);border-radius:12px;padding:14px 16px;margin-top:10px}
+
+/* TOAST */
+.toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);padding:10px 22px;border-radius:25px;
+  font-weight:800;font-size:13px;z-index:999;display:none;box-shadow:0 4px 30px rgba(0,0,0,.5);white-space:nowrap}
+
+/* UTILS */
+.up{color:var(--g)} .dn{color:var(--r)} .neu-c{color:var(--y)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.dv{height:1px;background:var(--border);margin:12px 0}
+.foot{background:var(--bg2);border-top:1px solid var(--border);padding:22px 15px;text-align:center}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+
+<!-- NAV -->
+<div class="nav">
+  <div class="nav-logo">📊</div>
+  <div class="nav-tabs">
+    <div class="ntab on"  onclick="go('home',this)">🏠 Home</div>
+    <div class="ntab" onclick="go('parts',this)">👥 FII/DII</div>
+    <div class="ntab" onclick="go('levels',this)">📈 Levels</div>
+    <div class="ntab" onclick="go('vix',this)">⚡ VIX</div>
+    <div class="ntab" onclick="go('global',this)">🌍 Global</div>
+    <div class="ntab" onclick="go('oi',this)">🔥 OI</div>
+    <div class="ntab" onclick="go('heat',this)">🎯 Heat</div>
+    <div class="ntab" onclick="go('paisa',this)">💰 Paisa</div>
+    <div class="ntab" onclick="go('alpha',this)">⚡ Alpha</div>
+    <div class="ntab" onclick="go('liquidity',this)">🌊 Liquidity</div>
+    <div class="ntab" onclick="go('gann',this)">⚙️ Gann</div>
+    <div class="ntab" onclick="go('update',this)">✏️ Update</div>
+  </div>
+  <div class="nclock" id="nc">--:--</div>
+  <div id="ms"></div>
+  <div class="rfbtn" id="rfb" onclick="refresh()">🔄</div>
+</div>
+
+<!-- TICKER -->
+<div class="ticker"><div class="t-inner" id="tkr"></div></div>
+
+<!-- ═══════════════ HOME ═══════════════ -->
+<div class="pg on" id="pg-home">
+  <div class="notice">
+    <div style="font-size:13px;font-weight:800;color:var(--y);margin-bottom:6px">⏰ DATA UPDATE NOTICE</div>
+    <div style="background:rgba(255,165,0,.13);color:var(--y);border:1px solid rgba(255,165,0,.25);display:inline-block;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:800;margin-bottom:6px">10:00 PM - 11:00 PM</div>
+    <div style="font-size:11px;color:var(--mu2)">Visit after 10 PM for updated post-market analysis.</div>
+    <div style="font-size:11px;color:var(--mu2);margin-top:3px;letter-spacing:.5px">PREDICTION FOR: NIFTY || SENSEX || BANKNIFTY</div>
+  </div>
+
+  <div class="card" style="padding:18px">
+    <div style="font-size:12px;color:var(--acc);font-weight:800;letter-spacing:1px;text-transform:uppercase;display:flex;align-items:center;gap:7px;margin-bottom:10px">📅 Prev. Trading Date</div>
+    <div id="h-date" style="font-size:30px;font-weight:900;margin-bottom:4px">26-Feb-2026</div>
+    <div style="font-size:12px;color:var(--mu2)">FII-DII Data Decoding</div>
+  </div>
+
+  <div class="pred-card">
+    <div style="font-size:11px;color:var(--acc);font-weight:800;letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:16px">📢 NEXT DAY FINAL PREDICTION</div>
+    <div id="h-emoji" style="font-size:56px;margin-bottom:10px">⬇️</div>
+    <div id="h-pred" class="pred-text dn">Market Goes Down</div>
+    <div style="font-size:12px;color:var(--mu2)">Nifty Direction Based on Data Decoding</div>
+    <div id="h-badge"><span class="pred-badge dn">📉 BEARISH</span></div>
+  </div>
+
+  <!-- PARTICIPANTS (static IDs — Python updates these) -->
+  <div class="card">
+    <div class="ct">👥 Participants Data</div>
+
+    <!-- CLIENT -->
+    <div class="pcard bull">
+      <div class="pcard-hdr">
+        <div>
+          <div class="pcard-lbl">CLIENT (Retailer)</div>
+          <div id="client-mood" class="pcard-mood" style="color:var(--g)">Heavily Bullish</div>
+          <div class="pcard-sub">(Retail buying — possible trap)</div>
+        </div>
+        <div id="client-badge" class="pcard-badge" style="background:rgba(0,230,118,.08);color:var(--g);border:1px solid rgba(0,230,118,.25)">BULLISH ↑</div>
+      </div>
+      <div class="p-grid">
+        <div class="p-cell">
+          <div class="p-cell-lbl">📈 Index Call (Net)</div>
+          <div id="call-net" class="p-cell-val up">+2,45,000</div>
+        </div>
+        <div class="p-cell">
+          <div class="p-cell-lbl">📉 Index Put (Net)</div>
+          <div id="put-net" class="p-cell-val dn">-1,85,000</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FII -->
+    <div class="pcard bear">
+      <div class="pcard-hdr">
+        <div>
+          <div class="pcard-lbl">FII (Foreign — Most Important!)</div>
+          <div id="fii-mood" class="pcard-mood" style="color:var(--r)">Heavily Bearish</div>
+          <div class="pcard-sub">(Big money selling!)</div>
+        </div>
+        <div id="fii-badge" class="pcard-badge" style="background:rgba(255,71,87,.08);color:var(--r);border:1px solid rgba(255,71,87,.25)">BEARISH ↓</div>
+      </div>
+      <div class="p-grid">
+        <div class="p-cell">
+          <div class="p-cell-lbl">📈 Index Call (Net)</div>
+          <div id="fii-call" class="p-cell-val dn">-1,60,000</div>
+        </div>
+        <div class="p-cell">
+          <div class="p-cell-lbl">📉 Index Put (Net)</div>
+          <div id="fii-put" class="p-cell-val up">+1,25,000</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRO -->
+    <div class="pcard bear">
+      <div class="pcard-hdr">
+        <div>
+          <div class="pcard-lbl">PRO (Big Traders)</div>
+          <div id="pro-mood" class="pcard-mood" style="color:var(--r)">Bearish</div>
+          <div class="pcard-sub">(PRO selling)</div>
+        </div>
+        <div id="pro-badge" class="pcard-badge" style="background:rgba(255,71,87,.08);color:var(--r);border:1px solid rgba(255,71,87,.25)">BEARISH ↓</div>
+      </div>
+      <div class="p-grid">
+        <div class="p-cell">
+          <div class="p-cell-lbl">📈 Index Call (Net)</div>
+          <div id="pro-call" class="p-cell-val dn">-85,000</div>
+        </div>
+        <div class="p-cell">
+          <div class="p-cell-lbl">📉 Index Put (Net)</div>
+          <div id="pro-put" class="p-cell-val up">+60,000</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DII -->
+    <div class="pcard neu">
+      <div class="pcard-hdr">
+        <div>
+          <div class="pcard-lbl">DII (Domestic)</div>
+          <div id="dii-mood" class="pcard-mood" style="color:var(--y)">Neutral</div>
+          <div class="pcard-sub">(Data not available)</div>
+        </div>
+        <div id="dii-badge" class="pcard-badge" style="background:rgba(0,212,255,.06);color:var(--y);border:1px solid rgba(0,212,255,.18)">NEUTRAL ↔</div>
+      </div>
+      <div class="p-grid">
+        <div class="p-cell">
+          <div class="p-cell-lbl">📈 Index Call (Net)</div>
+          <div id="dii-call" class="p-cell-val" style="color:var(--mu2)">--</div>
+        </div>
+        <div class="p-cell">
+          <div class="p-cell-lbl">📉 Index Put (Net)</div>
+          <div id="dii-put" class="p-cell-val" style="color:var(--mu2)">--</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SENTIMENT -->
+    <div class="sent-bar">
+      <div style="font-size:11px;color:var(--mu2);margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;font-weight:800">Overall Sentiment</div>
+      <div id="h-sent" style="font-size:24px;font-weight:900;color:var(--r)">Bearish</div>
+    </div>
+
+    <!-- SIGNAL BOX -->
+    <div id="h-fake" style="margin-top:12px"></div>
+  </div>
+
+  <!-- LEVELS MINI -->
+  <div class="card">
+    <div class="ct">📈 Intraday Levels</div>
+    <div class="lv-head res">⬆️ Resistance</div>
+    <div id="h-res"></div>
+    <div class="lv-head sup" style="margin-top:9px">⬇️ Support</div>
+    <div id="h-sup"></div>
+  </div>
+
+  <!-- GLOBAL MINI -->
+  <div class="card">
+    <div class="ct">🌍 Global Indices</div>
+    <div id="h-global"></div>
+    <div class="sent-bar" style="margin-top:10px">
+      <div style="font-size:11px;color:var(--mu2);margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;font-weight:800">Overall Global Sentiment</div>
+      <div id="h-gsent" style="font-size:22px;font-weight:900">--</div>
+    </div>
+  </div>
+
+  <!-- VIX MINI -->
+  <div class="card">
+    <div class="ct">⚡ India VIX & Daily Range</div>
+    <div class="vix-hero">
+      <div style="font-size:10px;color:rgba(192,150,255,.7);letter-spacing:3px;text-transform:uppercase;margin-bottom:8px">India VIX</div>
+      <div id="h-vix" class="vix-num">14.15</div>
+      <div style="font-size:11px;color:var(--mu2)">Volatility Index</div>
+    </div>
+    <div class="vix-row"><div style="font-size:12px;color:var(--mu2);margin-bottom:8px">🟢 Max Upside Move</div><div id="h-vu" class="vix-row-val up">25,615</div></div>
+    <div class="vix-row"><div style="font-size:12px;color:var(--mu2);margin-bottom:8px">🔴 Max Downside Move</div><div id="h-vd" class="vix-row-val dn">25,238</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════ FII/DII ═══════════════ -->
+<div class="pg" id="pg-parts">
+  <div class="card">
+    <div class="ct">👥 FII/DII Full Analysis</div>
+    <div style="background:rgba(255,165,0,.06);border:1px solid rgba(255,165,0,.2);border-radius:12px;padding:14px;margin-bottom:14px">
+      <div style="font-size:13px;font-weight:800;color:var(--y);margin-bottom:6px">🧠 Decoding Logic</div>
+      <div style="font-size:12px;color:var(--mu2);line-height:1.85">
+        📌 <strong style="color:var(--tx)">FII Call Sell + Put Buy</strong> = Bearish (Market Down)<br>
+        📌 <strong style="color:var(--tx)">Client Call Buy + Put Sell</strong> = Retail Bullish (Possible Trap)<br>
+        📌 <strong style="color:var(--tx)">FII aur Client opposite</strong> = Fake Rally Signal<br>
+        📌 <strong style="color:var(--tx)">FII + PRO same side</strong> = Strong directional move
+      </div>
+    </div>
+    <div id="fp-fake"></div>
+
+    <!-- Summary table -->
+    <div style="background:var(--card2);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-top:12px">
+      <div style="padding:12px 16px;font-size:10px;font-weight:800;color:var(--acc);letter-spacing:2px;text-transform:uppercase;border-bottom:1px solid var(--border)">LIVE PARTICIPANT SUMMARY</div>
+      <div id="parts-table"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ LEVELS ═══════════════ -->
+<div class="pg" id="pg-levels">
+  <div class="card">
+    <div class="ct">📈 Nifty Intraday Levels</div>
+    <div class="lv-head res">⬆️ Resistance Zones</div>
+    <div id="lv-res"></div>
+    <div class="lv-head sup" style="margin-top:10px">⬇️ Support Zones</div>
+    <div id="lv-sup"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ VIX ═══════════════ -->
+<div class="pg" id="pg-vix">
+  <div class="card">
+    <div class="ct">⚡ India VIX Analysis</div>
+    <div class="vix-hero">
+      <div style="font-size:10px;color:rgba(192,150,255,.7);letter-spacing:3px;text-transform:uppercase;margin-bottom:8px">India VIX</div>
+      <div id="v-big" class="vix-num">14.15</div>
+      <div style="font-size:11px;color:var(--mu2)">Formula: VIX ÷ √252 ÷ 100 × Spot</div>
+    </div>
+    <div class="vix-row"><div style="font-size:12px;color:var(--mu2);margin-bottom:8px">🟢 Max Upside Move</div><div id="v-u" class="vix-row-val up">25,615</div></div>
+    <div class="vix-row"><div style="font-size:12px;color:var(--mu2);margin-bottom:8px">🔴 Max Downside Move</div><div id="v-d" class="vix-row-val dn">25,238</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════ GLOBAL ═══════════════ -->
+<div class="pg" id="pg-global">
+  <div class="card">
+    <div class="ct">🌍 Global Indices Live</div>
+    <div id="gl-list"></div>
+    <div class="sent-bar" style="margin-top:10px">
+      <div style="font-size:11px;color:var(--mu2);margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;font-weight:800">Overall Global Sentiment</div>
+      <div id="gl-sent" style="font-size:22px;font-weight:900">--</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ OI ═══════════════ -->
+<div class="pg" id="pg-oi">
+  <div class="card">
+    <div class="ct">🔥 Open Interest Analysis</div>
+    <div class="tabs">
+      <div class="tab on" onclick="oiTab(this,'call')">CALL OI</div>
+      <div class="tab" onclick="oiTab(this,'put')">PUT OI</div>
+      <div class="tab" onclick="oiTab(this,'pcr')">PCR</div>
+      <div class="tab" onclick="oiTab(this,'bnk')">BANK NF</div>
+    </div>
+    <div id="oiContent"></div>
+    <div class="g2" style="margin-top:12px">
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center">
+        <div style="font-size:10px;color:var(--mu2);letter-spacing:1px;margin-bottom:5px;font-weight:800;text-transform:uppercase">Max Pain</div>
+        <div style="font-size:26px;font-weight:900;font-family:'Share Tech Mono',monospace;color:var(--y)">23,200</div>
+      </div>
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center">
+        <div style="font-size:10px;color:var(--mu2);letter-spacing:1px;margin-bottom:5px;font-weight:800;text-transform:uppercase">PCR Signal</div>
+        <div style="font-size:26px;font-weight:900;color:var(--r)">Bearish</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ HEATMAP ═══════════════ -->
+<div class="pg" id="pg-heat">
+  <div class="card"><div class="ct">🎯 Sector Heatmap</div><div class="hm" id="hmGrid"></div></div>
+  <div class="card"><div class="ct">🟢 Top Gainers</div><div id="gainers"></div></div>
+  <div class="card"><div class="ct">🔴 Top Losers</div><div id="losers"></div></div>
+</div>
+
+<!-- ═══════════════ PAISA ═══════════════ -->
+<div class="pg" id="pg-paisa">
+  <div class="paisa-sum">
+    <div style="font-size:10px;color:var(--y);letter-spacing:3px;text-transform:uppercase;font-weight:800;margin-bottom:5px">💰 Total Investment</div>
+    <div id="ps-total" class="paisa-total">₹0</div>
+    <div style="font-size:12px;color:var(--mu2)">Aapka Paisa — Sab trades ka sum</div>
+  </div>
+  <div class="pstat-g">
+    <div class="pstat"><div class="pstat-lbl">Total P&L</div><div id="ps-pnl" class="pstat-val">₹0</div></div>
+    <div class="pstat"><div class="pstat-lbl">Trades</div><div id="ps-count" class="pstat-val neu-c">0</div></div>
+    <div class="pstat"><div class="pstat-lbl">Profit</div><div id="ps-win" class="pstat-val up">0</div></div>
+    <div class="pstat"><div class="pstat-lbl">Loss</div><div id="ps-loss" class="pstat-val dn">0</div></div>
+  </div>
+  <div class="add-form">
+    <div style="font-size:12px;font-weight:800;color:var(--acc);letter-spacing:2px;text-transform:uppercase;margin-bottom:13px">➕ Nayi Trade Add Karo</div>
+    <div style="margin-bottom:9px"><div class="flbl">Stock / Index Name</div><input class="finp" id="t-name" type="text" placeholder="e.g. NIFTY, INDIANB, RELIANCE" style="text-transform:uppercase"></div>
+    <div class="fg2">
+      <div><div class="flbl">Buy/Sell</div><select class="fsel" id="t-type"><option value="buy">BUY</option><option value="sell">SELL</option></select></div>
+      <div><div class="flbl">Qty</div><input class="finp" id="t-qty" type="number" placeholder="1" min="1"></div>
+      <div><div class="flbl">Entry ₹</div><input class="finp" id="t-entry" type="number" placeholder="982.75" step="0.05"></div>
+      <div><div class="flbl">Exit / CMP ₹</div><input class="finp" id="t-exit" type="number" placeholder="0=open" step="0.05"></div>
+      <div><div class="flbl">Lot Size</div><input class="finp" id="t-lot" type="number" placeholder="25" value="1"></div>
+      <div><div class="flbl">Brokerage ₹</div><input class="finp" id="t-brok" type="number" placeholder="40" value="40"></div>
+    </div>
+    <div style="margin-bottom:10px"><div class="flbl">Note</div><input class="finp" id="t-note" type="text" placeholder="e.g. Breakout trade"></div>
+    <button class="abtn" onclick="addTrade()">✅ Trade Add Karo</button>
+  </div>
+  <div id="tradeList"></div>
+</div>
+
+<!-- ═══════════════ ALPHA ═══════════════ -->
+<div class="pg" id="pg-alpha">
+  <div class="card">
+    <div class="ct">⚡ Triple-Confirmation Alpha</div>
+    <div style="background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.2);border-radius:12px;padding:13px;margin-bottom:14px;font-size:12px;color:var(--mu2);line-height:1.75">
+      🧠 <strong style="color:var(--p)">BB Breakout + Smart Volume + EMA Trend</strong> — 3 conditions ek saath = BIG MONEY signal!
+    </div>
+    <div style="background:rgba(0,212,255,.03);border:1px solid rgba(0,212,255,.13);border-radius:14px;padding:15px;margin-bottom:12px">
+      <div style="font-size:11px;font-weight:800;color:var(--c);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">📊 TradingView se Values Daalo</div>
+      <div class="g2" style="margin-bottom:10px">
+        <div><div class="flbl">Close ₹</div><input class="finp" id="al-close" type="number" placeholder="23412"></div>
+        <div><div class="flbl">BB Upper ₹</div><input class="finp" id="al-bbu" type="number" placeholder="23550"></div>
+        <div><div class="flbl">BB Lower ₹</div><input class="finp" id="al-bbl" type="number" placeholder="23200"></div>
+        <div><div class="flbl">BB Width</div><input class="finp" id="al-bbw" type="number" placeholder="350"></div>
+        <div><div class="flbl">Avg BB Width</div><input class="finp" id="al-avgbbw" type="number" placeholder="280"></div>
+        <div><div class="flbl">Volume</div><input class="finp" id="al-vol" type="number" placeholder="18500"></div>
+        <div><div class="flbl">Avg Volume</div><input class="finp" id="al-avgvol" type="number" placeholder="12000"></div>
+        <div><div class="flbl">EMA 9 ₹</div><input class="finp" id="al-ema9" type="number" placeholder="23380"></div>
+        <div><div class="flbl">EMA 21 ₹</div><input class="finp" id="al-ema21" type="number" placeholder="23290"></div>
+        <div><div class="flbl">Prev Close ₹</div><input class="finp" id="al-prev" type="number" placeholder="23350"></div>
+      </div>
+      <button class="abtn" onclick="calcAlpha()">⚡ Signal Generate Karo!</button>
+    </div>
+    <div id="alphaResult"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ LIQUIDITY ═══════════════ -->
+<div class="pg" id="pg-liquidity">
+  <div class="card">
+    <div class="ct">🌊 Vayu Liquidity Hunter</div>
+    <div style="background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.2);border-radius:12px;padding:13px;margin-bottom:14px;font-size:12px;color:var(--mu2);line-height:1.75">
+      💡 <strong style="color:var(--p)">VWAP + Volatility Bands + Smart Volume</strong> — Liquidity grab = Institutions ka entry/exit!
+    </div>
+    <div style="background:rgba(0,212,255,.03);border:1px solid rgba(0,212,255,.13);border-radius:14px;padding:15px;margin-bottom:12px">
+      <div style="font-size:11px;font-weight:800;color:var(--c);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">📊 Chart Values Daalo</div>
+      <div class="g2" style="margin-bottom:10px">
+        <div><div class="flbl">Close ₹</div><input class="finp" id="lq-close" type="number" placeholder="23412"></div>
+        <div><div class="flbl">High ₹</div><input class="finp" id="lq-high" type="number" placeholder="23540"></div>
+        <div><div class="flbl">Low ₹</div><input class="finp" id="lq-low" type="number" placeholder="23280"></div>
+        <div><div class="flbl">VWAP ₹</div><input class="finp" id="lq-vwap" type="number" placeholder="23380"></div>
+        <div><div class="flbl">StdDev (20)</div><input class="finp" id="lq-std" type="number" placeholder="85"></div>
+        <div><div class="flbl">Volume</div><input class="finp" id="lq-vol" type="number" placeholder="18500"></div>
+        <div><div class="flbl">Avg Volume</div><input class="finp" id="lq-avgvol" type="number" placeholder="12000"></div>
+        <div><div class="flbl">Prev Low ₹</div><input class="finp" id="lq-prevlow" type="number" placeholder="23310"></div>
+        <div><div class="flbl">Prev High ₹</div><input class="finp" id="lq-prevhigh" type="number" placeholder="23490"></div>
+      </div>
+      <button class="abtn" onclick="calcLiquidity()">🌊 Signal Generate Karo!</button>
+    </div>
+    <div id="liqResult"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ GANN ═══════════════ -->
+<div class="pg" id="pg-gann">
+  <div class="card">
+    <div class="ct">⚙️ Gann Square of 9</div>
+    <p style="font-size:12px;color:var(--mu2);line-height:1.75;margin-bottom:13px">W.D. Gann ka Square of 9 — price ki mathematical cycles se key support aur resistance.</p>
+    <div class="flbl">Price Enter Karo</div>
+    <input class="finp" style="margin-bottom:10px" type="number" id="gannP" placeholder="e.g. 23450">
+    <button class="abtn" onclick="calcGann()">⚡ Calculate Levels</button>
+    <div id="gannR"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ UPDATE ═══════════════ -->
+<div class="pg" id="pg-update">
+  <div class="card">
+    <div class="ct">✏️ Data Update — 2 Min Mein Done!</div>
+
+    <!-- ═══ METHOD 0: NSE API DIRECT ═══ -->
+    <div style="background:rgba(168,85,247,.07);border:2px solid rgba(168,85,247,.3);border-radius:16px;padding:16px;margin-bottom:14px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span style="font-size:20px">🚀</span>
+        <div style="font-size:14px;font-weight:800;color:var(--p)">METHOD 1 — NSE Direct Fetch</div>
+        <span style="background:rgba(0,230,118,.1);color:var(--g);border:1px solid rgba(0,230,118,.25);border-radius:20px;padding:2px 10px;font-size:10px;font-weight:800">FASTEST</span>
+      </div>
+      <div style="font-size:11px;color:var(--mu2);line-height:1.8;margin-bottom:12px">
+        NSE ki official API se seedha data fetch karta hai! <br>
+        <span style="color:var(--y)">⚠️ Browser CORS block kar sakta hai — agar kaam na kare toh Method 2 use karo</span>
+      </div>
+      <button class="abtn" style="background:rgba(168,85,247,.1);border-color:rgba(168,85,247,.3);color:var(--p);margin-bottom:10px;font-size:14px" onclick="fetchNSEDirect()">
+        🚀 NSE se Live Data Fetch Karo!
+      </button>
+      <div id="nse-fetch-status" style="display:none"></div>
+    </div>
+    <div style="background:rgba(0,200,150,.06);border:2px solid rgba(0,200,150,.25);border-radius:16px;padding:16px;margin-bottom:14px">
+      <div style="font-size:14px;font-weight:800;color:var(--acc);margin-bottom:4px">⚡ METHOD 1 — CSV Paste (Fastest!)</div>
+      <div style="font-size:12px;color:var(--mu2);margin-bottom:12px;line-height:1.7">
+        NSE ka CSV kholo → Sab text copy karo → Yahan paste karo → Auto update! 🚀
+      </div>
+
+      <!-- Step by step guide -->
+      <div style="background:rgba(0,0,0,.2);border-radius:10px;padding:12px;margin-bottom:12px">
+        <div style="font-size:11px;font-weight:800;color:var(--y);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">📋 Steps:</div>
+        <div style="font-size:12px;color:var(--mu2);line-height:2">
+          <b style="color:var(--tx)">1.</b> URL Generator se CSV link lao (neeche hai) 👇<br>
+          <b style="color:var(--tx)">2.</b> Browser mein URL kholo → Ctrl+A → Ctrl+C (Sab copy karo)<br>
+          <b style="color:var(--tx)">3.</b> Neeche box mein Paste karo (Ctrl+V)<br>
+          <b style="color:var(--tx)">4.</b> "Parse & Update" button dabao → Done! ✅
+        </div>
+      </div>
+
+      <div class="flbl" style="margin-bottom:6px">📄 CSV Data Yahan Paste Karo:</div>
+      <textarea id="csv-paste" style="width:100%;height:120px;background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--tx);font-family:'Share Tech Mono',monospace;font-size:11px;resize:vertical;line-height:1.6" placeholder="Client Type,Index Call Long,Index Call Short,Index Put Long,Index Put Short,...
+Client,245000,0,0,185000,...
+FII,0,160000,125000,0,...
+Pro,0,85000,60000,0,..."></textarea>
+      <button class="abtn" style="margin-top:10px;background:rgba(0,200,150,.1);border-color:rgba(0,200,150,.3);font-size:15px" onclick="parseCSV()">⚡ Parse & Auto Update Karo!</button>
+      <div id="csv-parse-result" style="display:none;margin-top:12px"></div>
+    </div>
+
+    <!-- ═══ STEP 2: URL GENERATOR ═══ -->
+    <div style="background:rgba(30,144,255,.06);border:2px solid rgba(30,144,255,.2);border-radius:14px;padding:16px;margin-bottom:14px">
+      <div style="font-size:13px;font-weight:800;color:var(--b);margin-bottom:4px">🔗 NSE CSV URL Generator</div>
+      <div style="font-size:11px;color:var(--mu2);margin-bottom:10px">Date daao → URL milega → Browser mein kholo → Copy karo</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+        <div><div class="flbl">Day</div><input class="finp" id="csv-dd" type="number" placeholder="27" min="1" max="31"></div>
+        <div><div class="flbl">Month</div><input class="finp" id="csv-mm" type="number" placeholder="02" min="1" max="12"></div>
+        <div><div class="flbl">Year</div><input class="finp" id="csv-yy" type="number" placeholder="2026"></div>
+      </div>
+      <button class="abtn" style="background:rgba(30,144,255,.08);border-color:rgba(30,144,255,.25);color:var(--b);margin-bottom:10px" onclick="genCSVUrl()">🔗 URL Banao</button>
+      <div id="csv-url-box" style="display:none">
+        <div class="flbl" style="margin-bottom:5px">📋 URL (Click = Copy):</div>
+        <div id="csv-url-text" onclick="copyURL(this)" style="background:rgba(0,0,0,.3);border:1px solid rgba(30,144,255,.2);border-radius:9px;padding:11px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--c);word-break:break-all;cursor:pointer;line-height:1.7"></div>
+        <a id="csv-dl-link" href="#" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(30,144,255,.08);border:1px solid rgba(30,144,255,.2);border-radius:10px;padding:11px;margin-top:8px;text-decoration:none;color:var(--b);font-weight:800;font-size:12px">⬇️ Browser Mein Kholo</a>
+      </div>
+    </div>
+
+    <div class="upd-block cli"><div class="upd-title" style="color:var(--g)">CLIENT (Retailer)</div>
+      <div class="g2"><div><div class="flbl">Call Net</div><input class="finp" id="ua-cc" type="number" placeholder="+245000"></div>
+      <div><div class="flbl">Put Net</div><input class="finp" id="ua-cp" type="number" placeholder="-185000"></div></div></div>
+
+    <div class="upd-block fii"><div class="upd-title" style="color:var(--r)">FII (Foreign — Sabse Important!)</div>
+      <div class="g2"><div><div class="flbl">Call Net</div><input class="finp" id="ua-fc" type="number" placeholder="-160000"></div>
+      <div><div class="flbl">Put Net</div><input class="finp" id="ua-fp" type="number" placeholder="+125000"></div></div></div>
+
+    <div class="upd-block pro"><div class="upd-title" style="color:var(--y)">PRO (Big Traders)</div>
+      <div class="g2"><div><div class="flbl">Call Net</div><input class="finp" id="ua-pc" type="number" placeholder="-85000"></div>
+      <div><div class="flbl">Put Net</div><input class="finp" id="ua-pp" type="number" placeholder="+60000"></div></div></div>
+
+    <div class="upd-block dii"><div class="upd-title" style="color:var(--c)">DII (Domestic)</div>
+      <div class="g2"><div><div class="flbl">Call Net</div><input class="finp" id="ua-dc" type="number" placeholder="0"></div>
+      <div><div class="flbl">Put Net</div><input class="finp" id="ua-dp" type="number" placeholder="0"></div></div></div>
+
+    <div class="dv"></div>
+    <div class="g2" style="margin-bottom:10px">
+      <div><div class="flbl">India VIX</div><input class="finp" id="u-vix" type="number" placeholder="14.15" step="0.01"></div>
+      <div><div class="flbl">Nifty Spot</div><input class="finp" id="u-spot" type="number" placeholder="25426"></div>
+      <div><div class="flbl">Prev Date</div><input class="finp" id="u-date" type="text" placeholder="26-Feb-2026"></div>
+      <div><div class="flbl">Prediction</div><select class="fsel" id="u-pred"><option value="bullish">📈 Bullish</option><option value="bearish" selected>📉 Bearish</option><option value="neutral">↔️ Sideways</option></select></div>
+    </div>
+    <div class="flbl" style="margin-bottom:9px">📈 Nifty Levels (Optional)</div>
+    <div class="g2" style="margin-bottom:14px">
+      <div><div class="flbl" style="color:var(--r)">R5</div><input class="finp" id="u-r5" type="number" value="26215"></div>
+      <div><div class="flbl" style="color:var(--r)">R4</div><input class="finp" id="u-r4" type="number" value="26134"></div>
+      <div><div class="flbl" style="color:var(--r)">R3</div><input class="finp" id="u-r3" type="number" value="26054"></div>
+      <div><div class="flbl" style="color:var(--r)">R2</div><input class="finp" id="u-r2" type="number" value="25974"></div>
+      <div><div class="flbl" style="color:var(--r)">R1</div><input class="finp" id="u-r1" type="number" value="25893"></div>
+      <div><div class="flbl" style="color:var(--g)">S1</div><input class="finp" id="u-s1" type="number" value="25238"></div>
+      <div><div class="flbl" style="color:var(--g)">S2</div><input class="finp" id="u-s2" type="number" value="25158"></div>
+      <div><div class="flbl" style="color:var(--g)">S3</div><input class="finp" id="u-s3" type="number" value="25079"></div>
+      <div><div class="flbl" style="color:var(--g)">S4</div><input class="finp" id="u-s4" type="number" value="24999"></div>
+      <div><div class="flbl" style="color:var(--g)">S5</div><input class="finp" id="u-s5" type="number" value="24920"></div>
+    </div>
+    <button class="abtn" style="font-size:16px;padding:16px" onclick="applyUpdate()">⚡ UPDATE KARO!</button>
+  </div>
+</div>
+
+<div class="foot">
+  <div style="font-size:22px;font-weight:900;color:var(--acc);letter-spacing:2px;margin-bottom:3px">Coding Market ⚡</div>
+  <div style="font-size:12px;color:var(--mu2);font-style:italic;margin-bottom:8px">Where Data Meets Time Cycles</div>
+  <div style="font-size:18px;font-weight:900;letter-spacing:4px;background:linear-gradient(90deg,var(--g),var(--c));-webkit-background-clip:text;-webkit-text-fill-color:transparent">MR. RISHU RAJ</div>
+  <div style="font-size:10px;color:var(--mu);margin-top:10px;line-height:1.7">⚠️ SEBI Registered nahi hai. Sirf Educational purpose. Apni zimmedari par trade karo.</div>
+</div>
+
+<script>
+var D={
+  lv:{r5:26215,r4:26134,r3:26054,r2:25974,r1:25893,s1:25238,s2:25158,s3:25079,s4:24999,s5:24920},
+  global:[
+    {n:"Gift Nifty 🇸🇬",v:"25,654",c:"++0.20%",up:true},
+    {n:"S&P 500 🇺🇸",   v:"6,890", c:"+0.77%", up:true},
+    {n:"Nasdaq 🇺🇸",    v:"22,863",c:"+1.04%", up:true},
+    {n:"Dow Jones 🇺🇸", v:"49,174",c:"+0.76%", up:true},
+    {n:"Nikkei 🇯🇵",    v:"59,012",c:"+0.87%", up:true},
+    {n:"Hang Seng 🇭🇰", v:"26,413",c:"-1.10%", up:false},
+    {n:"DAX 🇩🇪",       v:"22,150",c:"-0.34%", up:false},
+    {n:"FTSE 🇬🇧",      v:"8,715", c:"+0.56%", up:true}
+  ],
+  sectors:[
+    {n:"IT",v:"+1.4%",c:"sup"},{n:"BANK",v:"-0.8%",c:"dn"},{n:"AUTO",v:"+0.6%",c:"up"},
+    {n:"PHARMA",v:"+2.1%",c:"sup"},{n:"METAL",v:"-1.2%",c:"sdn"},{n:"FMCG",v:"+0.2%",c:"flat"},
+    {n:"ENERGY",v:"-0.5%",c:"dn"},{n:"REALTY",v:"+1.8%",c:"sup"},{n:"PSU BK",v:"-1.5%",c:"sdn"},
+    {n:"INFRA",v:"+0.9%",c:"up"},{n:"MEDIA",v:"-0.3%",c:"flat"},{n:"CONS",v:"+0.4%",c:"up"}
+  ],
+  gainers:[{n:"RELIANCE",v:"1,245",c:"+2.4%"},{n:"HDFCBANK",v:"1,678",c:"+1.8%"},{n:"TCS",v:"3,890",c:"+1.2%"},{n:"INFY",v:"1,567",c:"+0.9%"}],
+  losers:[{n:"TATASTEEL",v:"142",c:"-2.1%"},{n:"HINDALCO",v:"623",c:"-1.8%"},{n:"COALINDIA",v:"389",c:"-1.4%"},{n:"ONGC",v:"267",c:"-1.1%"}]
+};
+var trades=JSON.parse(localStorage.getItem('cm_trades')||'[]');
+
+function ge(id){return document.getElementById(id)}
+function fmt(n){return parseFloat(n).toLocaleString('en-IN',{maximumFractionDigits:2})}
+
+// ── SIGNAL ──────────────────────────────────
+function getSignal(){
+  var fb=ge('fii-badge'),cb=ge('client-badge');
+  var fv=fb?fb.textContent:'';
+  var cv=cb?cb.textContent:'';
+  var fiiBear=fv.includes('BEARISH'),fiiBull=fv.includes('BULLISH');
+  var cliBull=cv.includes('BULLISH');
+
+  if(fiiBear&&cliBull) return{cls:'bear',tag:'⚠️ CAUTION',tc:'warn',title:'⚠️ FAKE BULLISH TRAP!',clr:'var(--y)',reason:'FII bech rahe hain lekin Retail khareed raha hai. <strong>Yeh TRAP ho sakta hai!</strong>'};
+  if(fiiBear)          return{cls:'bear',tag:'🔴 CONFIRMED',tc:'bad',title:'🔴 MARKET NEECHE JAAYEGA!',clr:'var(--r)',reason:'FII aur PRO dono bech rahe hain. <strong>Girawat aa sakti hai!</strong>'};
+  if(fiiBull)          return{cls:'bull',tag:'✅ CONFIRMED',tc:'ok',title:'✅ MARKET UPAR JAAYEGA!',clr:'var(--g)',reason:'Smart money buy kar raha hai. <strong>Move genuine lag raha hai!</strong>'};
+  return{cls:'neu',tag:'↔️ SIDEWAYS',tc:'info',title:'↔️ MARKET SIDEWAYS!',clr:'var(--c)',reason:'Koi clear direction nahi — range mein trade karo!'};
+}
+
+function renderFake(id){
+  var el=ge(id); if(!el) return;
+  var s=getSignal();
+  var bgs={'bear':'rgba(255,71,87,.05)','bull':'rgba(0,230,118,.05)','neu':'rgba(0,212,255,.04)'};
+  var bds={'bear':'rgba(255,71,87,.3)','bull':'rgba(0,230,118,.3)','neu':'rgba(0,212,255,.25)'};
+  var tagCls={'warn':'rgba(255,165,0,.2)','bad':'rgba(255,71,87,.2)','ok':'rgba(0,230,118,.15)','info':'rgba(0,212,255,.2)'};
+  var tagClr={'warn':'var(--y)','bad':'var(--r)','ok':'var(--g)','info':'var(--c)'};
+  el.innerHTML='<div style="border-radius:14px;padding:16px;border:2px solid '+bds[s.cls]+';background:'+bgs[s.cls]+'">'+
+    '<span style="display:inline-block;padding:3px 12px;border-radius:20px;font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;margin-bottom:9px;background:'+tagCls[s.tc]+';color:'+tagClr[s.tc]+';border:1px solid '+tagClr[s.tc]+'">'+s.tag+'</span>'+
+    '<div style="font-size:20px;font-weight:900;color:'+s.clr+';margin-bottom:6px">'+s.title+'</div>'+
+    '<div style="background:rgba(0,0,0,.2);border-radius:9px;padding:10px 12px;font-size:12px;color:var(--mu2);line-height:1.7">💡 '+s.reason+'</div></div>';
+}
+
+// ── RENDER ───────────────────────────────────
+function renderAll(){
+  // Levels
+  var rs=['r5','r4','r3','r2','r1'],ss=['s1','s2','s3','s4','s5'];
+  ['h-res','lv-res'].forEach(function(id){
+    var e=ge(id); if(!e) return;
+    e.innerHTML=rs.map(function(k,i){return '<div class="lv-item res"><span class="lv-price dn">'+D.lv[k].toLocaleString()+'</span><span class="lv-tag">R'+(5-i)+'</span></div>';}).join('');
+  });
+  ['h-sup','lv-sup'].forEach(function(id){
+    var e=ge(id); if(!e) return;
+    e.innerHTML=ss.map(function(k,i){return '<div class="lv-item sup"><span class="lv-price up">'+D.lv[k].toLocaleString()+'</span><span class="lv-tag">S'+(i+1)+'</span></div>';}).join('');
+  });
+
+  // Global
+  var gUp=0;
+  var glHtml=D.global.map(function(g){if(g.up)gUp++;return '<div class="gi-box"><div style="font-size:13px;color:var(--mu2);margin-bottom:10px">'+g.n+'</div><div class="gi-val '+(g.up?'up':'dn')+'">'+g.v+'</div><span class="gi-badge '+(g.up?'up':'dn')+'">'+g.c+'</span></div>';}).join('');
+  ['h-global','gl-list'].forEach(function(id){var e=ge(id);if(e)e.innerHTML=glHtml;});
+  var gs=gUp>D.global.length-gUp?'Bullish 📈':gUp<D.global.length-gUp?'Bearish 📉':'Neutral ↔️';
+  var gc=gUp>D.global.length-gUp?'var(--g)':gUp<D.global.length-gUp?'var(--r)':'var(--y)';
+  ['h-gsent','gl-sent'].forEach(function(id){var e=ge(id);if(e){e.textContent=gs;e.style.color=gc;}});
+
+  // Heatmap
+  var hm=ge('hmGrid'); if(hm) hm.innerHTML=D.sectors.map(function(s){return '<div class="hm-cell '+s.c+'"><div class="hm-name">'+s.n+'</div><div class="hm-val">'+s.v+'</div></div>';}).join('');
+  var gr=ge('gainers'); if(gr) gr.innerHTML=D.gainers.map(function(d){return '<div class="gi-box"><div style="font-size:13px;color:var(--mu2);margin-bottom:8px">'+d.n+'</div><div class="gi-val up">₹'+d.v+'</div><span class="gi-badge up">'+d.c+'</span></div>';}).join('');
+  var lr=ge('losers'); if(lr) lr.innerHTML=D.losers.map(function(d){return '<div class="gi-box"><div style="font-size:13px;color:var(--mu2);margin-bottom:8px">'+d.n+'</div><div class="gi-val dn">₹'+d.v+'</div><span class="gi-badge dn">'+d.c+'</span></div>';}).join('');
+
+  // FII/DII summary table
+  var pt=ge('parts-table');
+  if(pt){
+    var rows=[
+      ['CLIENT','call-net','put-net','client-mood','bull'],
+      ['FII','fii-call','fii-put','fii-mood','bear'],
+      ['PRO','pro-call','pro-put','pro-mood','bear'],
+      ['DII','dii-call','dii-put','dii-mood','neu']
+    ];
+    pt.innerHTML=rows.map(function(r){
+      var mood=ge(r[3]);var cv2=ge(r[1]);var pv2=ge(r[2]);
+      var moodTxt=mood?mood.textContent:'--';
+      var callTxt=cv2?cv2.textContent:'--';
+      var putTxt=pv2?pv2.textContent:'--';
+      var isBull=moodTxt.toLowerCase().includes('bullish');
+      var isBear=moodTxt.toLowerCase().includes('bearish');
+      var clr=isBull?'var(--g)':isBear?'var(--r)':'var(--y)';
+      return '<div style="display:grid;grid-template-columns:80px 1fr 1fr 100px;align-items:center;padding:12px 16px;border-bottom:1px solid rgba(30,52,80,.4)">'+
+        '<span style="font-size:11px;font-weight:800;color:var(--mu2)">'+r[0]+'</span>'+
+        '<span style="font-size:13px;font-weight:800;font-family:Share Tech Mono,monospace;color:'+(callTxt&&callTxt[0]==='-'?'var(--r)':'var(--g)')+'">'+callTxt+'</span>'+
+        '<span style="font-size:13px;font-weight:800;font-family:Share Tech Mono,monospace;color:'+(putTxt&&putTxt[0]==='-'?'var(--r)':'var(--g)')+'">'+putTxt+'</span>'+
+        '<span style="font-size:12px;font-weight:800;color:'+clr+'">'+moodTxt.replace('Heavily ','')+'</span>'+
+      '</div>';
+    }).join('');
+  }
+
+  // Fake signal
+  renderFake('h-fake');
+  renderFake('fp-fake');
+
+  // Trades
+  renderTrades();
+}
+
+// ── OI ──────────────────────────────────────
+var oiD={
+  call:[['Max Call OI','23,500','dn'],['2nd Highest','23,800','dn'],['OI Change','+8.4L','dn'],['Signal','Strong Bear','dn'],['Resistance','23,500','dn']],
+  put:[['Max Put OI','23,000','up'],['2nd Highest','22,500','up'],['OI Change','-5.2L','dn'],['Unwinding','Active','dn'],['Support','23,000','up']],
+  pcr:[['PCR (OI)','0.82','dn'],['PCR (Vol)','0.76','dn'],['Sentiment','Bearish','dn'],['Signal','Weak Market','dn'],['Calls > Puts','Yes','dn']],
+  bnk:[['BN Max Call','50,000','dn'],['BN Max Put','49,000','up'],['BN PCR','0.79','dn'],['BN Max Pain','49,400',''],['BN Bias','Bearish','dn']]
+};
+function oiTab(el,t){
+  document.querySelectorAll('#pg-oi .tab').forEach(function(x){x.classList.remove('on');});
+  el.classList.add('on');
+  ge('oiContent').innerHTML=oiD[t].map(function(r){return '<div class="oirow"><span style="font-size:13px;color:var(--mu2)">'+r[0]+'</span><span style="font-size:16px;font-weight:800;font-family:Share Tech Mono,monospace" class="'+r[2]+'">'+r[1]+'</span></div>';}).join('');
+}
+oiTab(document.querySelector('#pg-oi .tab'),'call');
+
+// ── CSV PASTE PARSER ─────────────────────────
+function parseCSV(){
+  var raw = (ge('csv-paste').value || '').trim();
+  if(!raw){ showToast('CSV data paste karo pehle!','#1a0010','var(--r)'); return; }
+
+  var lines = raw.split('\n').map(function(l){ return l.trim(); }).filter(Boolean);
+  if(lines.length < 2){ showToast('Data kam hai — poora CSV paste karo!','#1a0010','var(--r)'); return; }
+
+  // Parse header row
+  var hdr = lines[0].split(',').map(function(h){ return h.trim().toLowerCase(); });
+
+  // Column index finder
+  function ci(names){
+    for(var i=0;i<hdr.length;i++){
+      for(var j=0;j<names.length;j++){
+        if(hdr[i].indexOf(names[j].toLowerCase())>=0) return i;
+      }
+    }
+    return -1;
+  }
+
+  var typeIdx    = ci(['client type','clienttype','type','category']);
+  var callLongI  = ci(['index call long','call long']);
+  var callShortI = ci(['index call short','call short']);
+  var putLongI   = ci(['index put long','put long']);
+  var putShortI  = ci(['index put short','put short']);
+
+  if(typeIdx<0){ showToast('Client Type column nahi mila!','#1a0010','var(--r)'); return; }
+
+  function safeN(row, idx){
+    if(idx<0 || idx>=row.length) return 0;
+    return parseFloat((row[idx]||'0').replace(/,/g,'').trim()) || 0;
+  }
+
+  var results = {client:null, fii:null, pro:null, dii:null};
+
+  for(var i=1; i<lines.length; i++){
+    var row  = lines[i].split(',');
+    var type = (row[typeIdx]||'').trim().toLowerCase();
+
+    var callNet = safeN(row,callLongI) - safeN(row,callShortI);
+    var putNet  = safeN(row,putLongI)  - safeN(row,putShortI);
+    var net     = callNet + putNet;
+    var v       = net > 10000 ? 'bullish' : net < -10000 ? 'bearish' : 'neutral';
+
+    if(type.indexOf('client')>=0 || type.indexOf('retail')>=0)
+      results.client = {call:callNet, put:putNet, v:v};
+    else if(type.indexOf('fii')>=0 || type.indexOf('foreign')>=0)
+      results.fii    = {call:callNet, put:putNet, v:v};
+    else if(type.indexOf('pro')>=0)
+      results.pro    = {call:callNet, put:putNet, v:v};
+    else if(type.indexOf('dii')>=0 || type.indexOf('domestic')>=0)
+      results.dii    = {call:callNet, put:putNet, v:v};
+  }
+
+  // Check at least FII or Client found
+  if(!results.fii && !results.client){
+    showToast('FII/Client data nahi mila — CSV sahi hai?','#1a0010','var(--r)');
+    return;
+  }
+
+  // Fill missing with zeros
+  ['client','fii','pro','dii'].forEach(function(k){
+    if(!results[k]) results[k] = {call:0, put:0, v:'neutral'};
+  });
+
+  // Apply to inputs so applyUpdate works
+  var map = {
+    'ua-cc': results.client.call, 'ua-cp': results.client.put,
+    'ua-fc': results.fii.call,    'ua-fp': results.fii.put,
+    'ua-pc': results.pro.call,    'ua-pp': results.pro.put,
+    'ua-dc': results.dii.call,    'ua-dp': results.dii.put
+  };
+  Object.keys(map).forEach(function(id){ var e=ge(id); if(e) e.value=map[id]; });
+
+  // Show parse result
+  var res = ge('csv-parse-result');
+  var fmt2 = function(n){ return (n>=0?'+':'')+n.toLocaleString('en-IN'); };
+  var moodTxt = function(v){ return v==='bullish'?'Heavily Bullish':v==='bearish'?'Heavily Bearish':'Neutral'; };
+  var clr = function(v){ return v==='bullish'?'var(--g)':v==='bearish'?'var(--r)':'var(--y)'; };
+
+  res.style.display='block';
+  res.innerHTML =
+    '<div style="background:rgba(0,200,150,.06);border:1px solid rgba(0,200,150,.2);border-radius:12px;padding:14px">' +
+    '<div style="font-size:12px;font-weight:800;color:var(--acc);margin-bottom:10px;letter-spacing:1px">✅ CSV PARSE HO GAYA!</div>' +
+    ['client','fii','pro','dii'].map(function(k){
+      var d=results[k];
+      var label={client:'CLIENT',fii:'FII',pro:'PRO',dii:'DII'}[k];
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(30,52,80,.4)">' +
+        '<span style="font-size:12px;color:var(--mu2);font-weight:800;width:60px">'+label+'</span>' +
+        '<span style="font-family:Share Tech Mono,monospace;font-size:12px;color:'+(d.call>=0?'var(--g)':'var(--r)')+'">C:'+fmt2(d.call)+'</span>' +
+        '<span style="font-family:Share Tech Mono,monospace;font-size:12px;color:'+(d.put>=0?'var(--g)':'var(--r)')+'">P:'+fmt2(d.put)+'</span>' +
+        '<span style="font-size:12px;font-weight:800;color:'+clr(d.v)+'">'+moodTxt(d.v)+'</span></div>';
+    }).join('') +
+    '<button class="abtn" style="margin-top:12px;font-size:15px" onclick="applyUpdate()">🚀 Website Update Karo!</button>' +
+    '</div>';
+
+  showToast('CSV parse ho gaya! Ab Update Karo button dabao ✅','#001a0d','var(--g)');
+}
+
+// ── NSE CSV URL GENERATOR ─────────────────────
+function genCSVUrl(){
+  var dd = String(parseInt(ge('csv-dd').value)||new Date().getDate()).padStart(2,'0');
+  var mm = String(parseInt(ge('csv-mm').value)||new Date().getMonth()+1).padStart(2,'0');
+  var yy = String(parseInt(ge('csv-yy').value)||new Date().getFullYear());
+  var url = 'https://www.nseindia.com/content/nsccl/fao_participant_oi_'+dd+mm+yy+'.csv';
+  var box = ge('csv-url-box');
+  var txt = ge('csv-url-text');
+  var dlk = ge('csv-dl-link');
+  box.style.display='block';
+  txt.textContent=url;
+  txt.dataset.url=url;
+  if(dlk){dlk.href=url;}
+  showToast('URL ready! Click karke copy karo 📋','#001020','var(--b)');
+}
+
+function copyURL(el){
+  var url = el ? (el.dataset.url || el.textContent) : '';
+  if(!url) return;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(url).then(function(){
+      showToast('URL copy ho gaya! ✅','#001a0d','var(--g)');
+    });
+  } else {
+    var ta=document.createElement('textarea');
+    ta.value=url; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('URL copy ho gaya! ✅','#001a0d','var(--g)');
+  }
+}
+
+// ── UPDATE TAB ──────────────────────────────
+function autoSent(c,p){var n=c+p;return n>10000?'bullish':n<-10000?'bearish':'neutral';}
+function applyUpdate(){
+  var cc=parseFloat(ge('ua-cc').value)||0, cp=parseFloat(ge('ua-cp').value)||0;
+  var fc=parseFloat(ge('ua-fc').value)||0, fp=parseFloat(ge('ua-fp').value)||0;
+  var pc=parseFloat(ge('ua-pc').value)||0, pp=parseFloat(ge('ua-pp').value)||0;
+  var dc=parseFloat(ge('ua-dc').value)||0, dp=parseFloat(ge('ua-dp').value)||0;
+
+  var fmt2=function(n){return(n>=0?'+':'')+n.toLocaleString('en-IN');};
+  var moodTxt=function(v){return v==='bullish'?'Heavily Bullish':v==='bearish'?'Heavily Bearish':'Neutral';};
+  var badgeTxt=function(v){return v==='bullish'?'BULLISH ↑':v==='bearish'?'BEARISH ↓':'NEUTRAL ↔';};
+
+  // Update static IDs
+  var upd=function(id,val){var e=ge(id);if(e)e.textContent=val;};
+  var cv=autoSent(cc,cp),fv=autoSent(fc,fp),pv=autoSent(pc,pp),dv=autoSent(dc,dp);
+
+  upd('call-net',fmt2(cc)); upd('put-net',fmt2(cp));
+  upd('client-mood',moodTxt(cv)); upd('client-badge',badgeTxt(cv));
+  upd('fii-call',fmt2(fc)); upd('fii-put',fmt2(fp));
+  upd('fii-mood',moodTxt(fv)); upd('fii-badge',badgeTxt(fv));
+  upd('pro-call',fmt2(pc)); upd('pro-put',fmt2(pp));
+  upd('pro-mood',moodTxt(pv)); upd('pro-badge',badgeTxt(pv));
+  upd('dii-call',fmt2(dc)); upd('dii-put',fmt2(dp));
+  upd('dii-mood',moodTxt(dv)); upd('dii-badge',badgeTxt(dv));
+
+  // Prediction
+  var pred=ge('u-pred').value;
+  var predTxt=pred==='bullish'?'Market Goes Up':pred==='bearish'?'Market Goes Down':'Market Sideways';
+  var pe=ge('h-pred'),em=ge('h-emoji');
+  if(pe){pe.textContent=predTxt;pe.className='pred-text '+(pred==='bullish'?'up':pred==='bearish'?'dn':'sw');}
+  if(em) em.textContent=pred==='bullish'?'⬆️':pred==='bearish'?'⬇️':'↔️';
+
+  // Prediction badge
+  var hb=ge('h-badge');
+  if(hb) hb.innerHTML=pred==='bullish'?'<span class="pred-badge up">📈 BULLISH</span>':pred==='bearish'?'<span class="pred-badge dn">📉 BEARISH</span>':'<span class="pred-badge sw">↔️ SIDEWAYS</span>';
+
+  // Update participant card border colors
+  var cardMap={client:{v:cv,card:'pcard-client'},fii:{v:fv,card:'pcard-fii'},pro:{v:pv,card:'pcard-pro'},dii:{v:dv,card:'pcard-dii'}};
+  ['client','fii','pro','dii'].forEach(function(k){
+    var v={client:cv,fii:fv,pro:pv,dii:dv}[k];
+    var moodEl=ge(k+'-mood');
+    var badgeEl=ge(k+'-badge');
+    if(moodEl) moodEl.style.color=v==='bullish'?'var(--g)':v==='bearish'?'var(--r)':'var(--y)';
+    if(badgeEl){
+      badgeEl.style.color=v==='bullish'?'var(--g)':v==='bearish'?'var(--r)':'var(--y)';
+      badgeEl.style.borderColor=v==='bullish'?'rgba(0,230,118,.28)':v==='bearish'?'rgba(255,71,87,.28)':'rgba(0,212,255,.18)';
+    }
+  });
+  var bulls=[cv,fv,pv,dv].filter(function(x){return x==='bullish';}).length;
+  var bears=[cv,fv,pv,dv].filter(function(x){return x==='bearish';}).length;
+  var sent=bears>bulls?'Bearish':bulls>bears?'Bullish':'Neutral';
+  var sc=bears>bulls?'var(--r)':bulls>bears?'var(--g)':'var(--y)';
+  var hs=ge('h-sent'); if(hs){hs.textContent=sent;hs.style.color=sc;}
+
+  // VIX
+  var vix=parseFloat(ge('u-vix').value)||14.15;
+  var spot=parseFloat(ge('u-spot').value)||25426;
+  var mv=(vix/Math.sqrt(252)/100)*spot;
+  var vu=Math.round(spot+mv),vd=Math.round(spot-mv);
+  ['h-vix','v-big'].forEach(function(id){var e=ge(id);if(e)e.textContent=vix;});
+  ['h-vu','v-u'].forEach(function(id){var e=ge(id);if(e)e.textContent=vu.toLocaleString('en-IN');});
+  ['h-vd','v-d'].forEach(function(id){var e=ge(id);if(e)e.textContent=vd.toLocaleString('en-IN');});
+
+  // Date
+  var ud=ge('u-date'),hd=ge('h-date'); if(ud&&hd&&ud.value) hd.textContent=ud.value;
+
+  // Levels
+  ['r5','r4','r3','r2','r1','s1','s2','s3','s4','s5'].forEach(function(k){var v=parseFloat(ge('u-'+k).value);if(v)D.lv[k]=v;});
+
+  renderAll();
+  renderFake('h-fake');
+  showToast('Website update ho gayi! ✅','#001a0d','var(--g)');
+  go('home',document.querySelector('.ntab'));
+}
+
+// ── PAISA ────────────────────────────────────
+function addTrade(){
+  var name=(ge('t-name').value||'').toUpperCase().trim();
+  var type=ge('t-type').value;
+  var qty=parseFloat(ge('t-qty').value)||1;
+  var entry=parseFloat(ge('t-entry').value)||0;
+  var exit=parseFloat(ge('t-exit').value)||0;
+  var lot=parseFloat(ge('t-lot').value)||1;
+  var brok=parseFloat(ge('t-brok').value)||0;
+  var note=ge('t-note').value.trim();
+  if(!name||!entry){showToast('Stock name aur entry price daalo!','#1a0010','var(--r)');return;}
+  var invested=entry*qty*lot;
+  var pnl=0,open=true;
+  if(exit>0){open=false;pnl=(type==='buy'?exit-entry:entry-exit)*qty*lot-brok;}
+  trades.unshift({id:Date.now(),name,type,qty,entry,exit,lot,brok,note,invested,pnl,open});
+  localStorage.setItem('cm_trades',JSON.stringify(trades));
+  ['t-name','t-qty','t-entry','t-exit','t-note'].forEach(function(id){ge(id).value='';});
+  ge('t-lot').value='1';ge('t-brok').value='40';
+  renderTrades();showToast('Trade add ho gaya!','#001a0d','var(--g)');
+}
+
+function renderTrades(){
+  var totalInv=0,totalPnl=0,wins=0,losses=0;
+  trades.forEach(function(t){totalInv+=t.invested;if(!t.open){totalPnl+=t.pnl;if(t.pnl>=0)wins++;else losses++;}});
+  ge('ps-total').textContent='₹'+fmt(totalInv);
+  var pv=ge('ps-pnl');if(pv){pv.textContent=(totalPnl>=0?'+':'')+'₹'+fmt(Math.abs(totalPnl));pv.className='pstat-val '+(totalPnl>0?'up':totalPnl<0?'dn':'neu-c');}
+  ge('ps-count').textContent=trades.length;ge('ps-win').textContent=wins;ge('ps-loss').textContent=losses;
+  var tl=ge('tradeList');
+  if(!trades.length){tl.innerHTML='<div style="text-align:center;padding:30px;color:var(--mu2);font-size:13px">Koi trade nahi — pehli trade add karo! 📊</div>';return;}
+  tl.innerHTML=trades.map(function(t){
+    var pc=t.open?'even':t.pnl>0?'profit':'loss';
+    return '<div class="trade-card">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'+
+        '<div><div style="font-size:15px;font-weight:900">'+t.name+'</div>'+(t.note?'<div style="font-size:11px;color:var(--mu2)">'+t.note+'</div>':'')+
+        '</div><div style="display:flex;gap:6px;align-items:center">'+
+          '<span style="padding:3px 10px;border-radius:20px;font-size:10px;font-weight:800;background:'+(t.type==='buy'?'rgba(0,230,118,.1)':'rgba(255,71,87,.1)')+';color:'+(t.type==='buy'?'var(--g)':'var(--r)')+'">'+t.type.toUpperCase()+'</span>'+
+          '<div onclick="delTrade('+t.id+')" style="width:30px;height:30px;background:rgba(255,71,87,.08);border:1px solid rgba(255,71,87,.18);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--r)">🗑️</div>'+
+        '</div></div>'+
+      '<div class="trow"><span style="font-size:12px;color:var(--mu2)">Invested</span><span class="trow-val">₹'+fmt(t.invested)+'</span></div>'+
+      '<div class="trow"><span style="font-size:12px;color:var(--mu2)">Entry</span><span class="trow-val">₹'+fmt(t.entry)+'</span></div>'+
+      '<div class="trow"><span style="font-size:12px;color:var(--mu2)">Exit</span><span class="trow-val '+(t.exit>0?'up':'')+'">'+( t.exit>0?'₹'+fmt(t.exit):'Open 🟡')+'</span></div>'+
+      '<div class="trow"><span style="font-size:12px;color:var(--mu2)">Qty × Lot</span><span class="trow-val">'+t.qty+' × '+t.lot+'</span></div>'+
+      '<div class="pnl-box '+pc+'"><div style="font-size:10px;color:var(--mu2);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px">'+(t.open?'OPEN TRADE':t.pnl>=0?'PROFIT ✅':'LOSS ❌')+'</div>'+
+        '<div class="pnl-val '+(t.pnl>0?'up':t.pnl<0?'dn':'neu-c')+'">'+(t.open?'--':(t.pnl>=0?'+':'')+'₹'+fmt(Math.abs(t.pnl)))+'</div></div>'+
+    '</div>';
+  }).join('');
+}
+
+function delTrade(id){trades=trades.filter(function(t){return t.id!==id;});localStorage.setItem('cm_trades',JSON.stringify(trades));renderTrades();showToast('Trade delete ho gaya!','#1a0010','var(--r)');}
+
+// ── ALPHA ────────────────────────────────────
+function calcAlpha(){
+  var C=parseFloat(ge('al-close').value)||0,bbu=parseFloat(ge('al-bbu').value)||0,bbl=parseFloat(ge('al-bbl').value)||0;
+  var bbw=parseFloat(ge('al-bbw').value)||(bbu-bbl),avgbbw=parseFloat(ge('al-avgbbw').value)||0;
+  var vol=parseFloat(ge('al-vol').value)||0,avgvol=parseFloat(ge('al-avgvol').value)||0;
+  var ema9=parseFloat(ge('al-ema9').value)||0,ema21=parseFloat(ge('al-ema21').value)||0;
+  var prev=parseFloat(ge('al-prev').value)||0;
+  if(!C||!bbu||!bbl){showToast('Close, BB Upper, BB Lower daalo!','#1a0010','var(--r)');return;}
+  var squeezed=avgbbw>0?bbw<avgbbw:false;
+  var hiVol=avgvol>0?vol>avgvol*1.5:null;
+  var bullTrend=ema9>0&&ema21>0?ema9>ema21:null;
+  var bearTrend=ema9>0&&ema21>0?ema9<ema21:null;
+  var crossUp=prev>0?(prev<=bbu&&C>bbu):(C>bbu);
+  var crossDn=prev>0?(prev>=bbl&&C<bbl):(C<bbl);
+  var buySig=crossUp&&(hiVol!==false)&&(bullTrend!==false)&&!squeezed;
+  var sellSig=crossDn&&(hiVol!==false)&&(bearTrend!==false)&&!squeezed;
+  var mode=buySig?'buy':sellSig?'sell':'wait';
+  var clr=mode==='buy'?'var(--g)':mode==='sell'?'var(--r)':'var(--y)';
+  var score=[mode==='buy'?crossUp:crossDn,hiVol===true,mode==='buy'?(bullTrend===true):(bearTrend===true),!squeezed].filter(Boolean).length;
+  function cbox(lbl,ico,pass,val,desc){
+    var s=pass===null?'na':pass?'pass':'fail';
+    return '<div class="cbox '+s+'"><div style="font-size:22px;margin-bottom:6px">'+ico+'</div><div style="font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;color:var(--mu2)">'+lbl+'</div>'+
+      '<div style="font-size:13px;font-weight:800;color:'+(pass===null?'var(--mu2)':pass?'var(--g)':'var(--r)')+'">'+val+'</div>'+
+      '<div style="font-size:10px;color:var(--mu2);margin-top:3px">'+desc+'</div></div>';
+  }
+  ge('alphaResult').innerHTML=
+    '<div class="sig-hero '+(mode)+'">'+
+      '<div class="sig-pulse '+(mode)+'">'+( mode==='buy'?'🚀':mode==='sell'?'🔻':'⏳')+'</div>'+
+      '<div style="font-size:30px;font-weight:900;color:'+clr+';margin-bottom:6px">'+(mode==='buy'?'BIG MONEY ENTRY!':mode==='sell'?'BIG MONEY EXIT!':'WAIT — No Signal')+'</div>'+
+      '<div style="background:rgba(0,0,0,.3);border-radius:8px;height:8px;overflow:hidden;margin-bottom:8px"><div style="height:100%;width:'+(score/4*100)+'%;background:'+clr+';border-radius:8px"></div></div>'+
+      '<div style="font-size:11px;color:rgba(255,255,255,.5)">'+score+'/4 Conditions Passed</div>'+
+    '</div>'+
+    '<div class="cbox-grid">'+
+      cbox('BB Breakout','📊',crossUp||crossDn,crossUp?'BREAK UP ↑':crossDn?'BREAK DOWN ↓':'No Break','Close vs Band')+
+      cbox('Smart Volume','💧',hiVol,hiVol===null?'No Data':hiVol?'HIGH VOL':'LOW VOL','Vol vs 20-Avg')+
+      cbox('EMA Trend','📈',bullTrend===null?null:mode==='sell'?bearTrend:bullTrend,bullTrend===null?'No Data':bullTrend?'BULLISH':'BEARISH','EMA9 vs EMA21')+
+      cbox('No Squeeze','🔒',!squeezed,squeezed?'SQUEEZED ⚠️':'FREE ✅','BB Width')+
+    '</div>'+
+    (mode!=='wait'?'<div style="background:rgba(0,0,0,.25);border:1px solid '+(mode==='buy'?'rgba(0,230,118,.2)':'rgba(255,71,87,.2)')+';border-radius:14px;padding:16px;margin-top:12px">'+
+      '<div style="font-size:12px;font-weight:800;color:'+clr+';margin-bottom:12px">'+(mode==='buy'?'🚀 BUY PLAN':'🔻 SELL PLAN')+'</div>'+
+      [['Entry','₹'+C,''],['Target','₹'+(mode==='buy'?C+bbw*2:C-bbw*2).toFixed(2),mode==='buy'?'up':'dn'],['Stop Loss','₹'+(mode==='buy'?bbl.toFixed(2):bbu.toFixed(2)),'dn']].map(function(r){
+        return '<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(30,52,80,.5)"><span style="font-size:12px;color:var(--mu2)">'+r[0]+'</span><span style="font-size:15px;font-weight:800;font-family:Share Tech Mono,monospace;color:'+(r[2]==='up'?'var(--g)':r[2]==='dn'?'var(--r)':'var(--tx)')+'">'+r[1]+'</span></div>';
+      }).join('')+'</div>':'');
+  showToast('Alpha signal ready!','#001a0d','var(--g)');
+}
+
+// ── LIQUIDITY ────────────────────────────────
+function calcLiquidity(){
+  var C=parseFloat(ge('lq-close').value)||0,H=parseFloat(ge('lq-high').value)||0,L=parseFloat(ge('lq-low').value)||0;
+  var vwap=parseFloat(ge('lq-vwap').value)||0,std=parseFloat(ge('lq-std').value)||0;
+  var vol=parseFloat(ge('lq-vol').value)||0,avgvol=parseFloat(ge('lq-avgvol').value)||0;
+  var pl=parseFloat(ge('lq-prevlow').value)||0,ph=parseFloat(ge('lq-prevhigh').value)||0;
+  if(!C||!vwap){showToast('Close aur VWAP daalo!','#1a0010','var(--r)');return;}
+  var ub=vwap+std*2.5,lb=vwap-std*2.5;
+  var hiVol=avgvol>0?vol>avgvol*1.5:null;
+  var lcross=pl>0?(pl>=lb&&L<lb):(L<lb);
+  var hcross=ph>0?(ph<=ub&&H>ub):(H>ub);
+  var longT=lcross&&C>lb&&(hiVol!==false);
+  var shortT=hcross&&C<ub&&(hiVol!==false);
+  var mode=longT?'buy':shortT?'sell':'wait';
+  var clr=mode==='buy'?'var(--g)':mode==='sell'?'var(--r)':'var(--p)';
+  var pos=ub>lb?Math.min(Math.max((C-lb)/(ub-lb)*100,2),98):50;
+  ge('liqResult').innerHTML=
+    '<div class="sig-hero '+mode+'">'+
+      '<div class="sig-pulse '+(mode==='buy'?'buy':mode==='sell'?'sell':'wait')+'">'+(mode!=='wait'?'🎯':'🌊')+'</div>'+
+      '<div style="font-size:28px;font-weight:900;color:'+clr+';margin-bottom:6px">'+(mode==='buy'?'LIQUIDITY GRAB — SMART BUY!':mode==='sell'?'LIQUIDITY GRAB — SMART SELL!':'Waiting for Liquidity...')+'</div>'+
+    '</div>'+
+    '<div style="background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px">'+
+      '<div style="font-size:11px;font-weight:800;color:var(--mu2);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px">📍 Price in Bands</div>'+
+      '<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--mu2);margin-bottom:6px">'+
+        '<span style="color:var(--g)">Buy ₹'+lb.toFixed(1)+'</span>'+
+        '<span style="color:var(--y)">VWAP ₹'+vwap+'</span>'+
+        '<span style="color:var(--r)">Sell ₹'+ub.toFixed(1)+'</span></div>'+
+      '<div style="position:relative;height:26px;background:linear-gradient(90deg,rgba(0,230,118,.25),rgba(168,85,247,.1),rgba(255,71,87,.25));border-radius:8px;margin-bottom:8px">'+
+        '<div style="position:absolute;top:0;bottom:0;left:50%;width:2px;background:rgba(255,179,0,.6)"></div>'+
+        '<div style="position:absolute;top:50%;transform:translate(-50%,-50%);left:'+pos+'%;width:16px;height:16px;background:var(--tx);border-radius:50%;border:3px solid '+clr+';box-shadow:0 0 14px '+clr+'"></div>'+
+      '</div>'+
+    '</div>'+
+    (mode!=='wait'?
+      '<div style="background:rgba(0,0,0,.25);border:1px solid '+(mode==='buy'?'rgba(0,230,118,.2)':'rgba(255,71,87,.2)')+';border-radius:14px;padding:16px">'+
+        '<div style="font-size:12px;font-weight:800;color:'+clr+';margin-bottom:12px">'+(mode==='buy'?'🚀 BUY PLAN':'🔻 SELL PLAN')+'</div>'+
+        [['Entry','₹'+C,''],['Target (VWAP)','₹'+vwap,mode==='buy'?'up':'dn'],['Stop Loss','₹'+(mode==='buy'?L-std*.5:H+std*.5).toFixed(2),'dn']].map(function(r){
+          return '<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(30,52,80,.5)"><span style="font-size:12px;color:var(--mu2)">'+r[0]+'</span><span style="font-size:15px;font-weight:800;font-family:Share Tech Mono,monospace;color:'+(r[2]==='up'?'var(--g)':r[2]==='dn'?'var(--r)':'var(--tx)')+'">'+r[1]+'</span></div>';
+        }).join('')+'</div>':'<div style="text-align:center;padding:16px;color:var(--mu2);font-size:12px">Price bands ke beech hai — extreme ka wait karo!</div>');
+  showToast('Liquidity signal ready!','#001a0d','var(--g)');
+}
+
+// ── GANN ────────────────────────────────────
+function calcGann(){
+  var p=parseFloat(ge('gannP').value);
+  if(!p){showToast('Price daalo!','#1a0010','var(--r)');return;}
+  var sq=Math.sqrt(p);
+  var h='<table class="gann-tbl"><thead><tr><th>Degree</th><th class="up">Resistance</th><th class="dn">Support</th></tr></thead><tbody>';
+  [15,45,90,135,180,225,270,315,360].forEach(function(d){
+    var s=d/360/8;
+    h+='<tr><td style="color:var(--mu2);font-weight:700">'+d+'°</td><td class="up">'+Math.pow(sq+s,2).toFixed(2)+'</td><td class="dn">'+Math.pow(sq-s,2).toFixed(2)+'</td></tr>';
+  });
+  ge('gannR').innerHTML=h+'</tbody></table>';
+}
+
+// ── NAV ─────────────────────────────────────
+function go(id,el){
+  document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.ntab').forEach(function(t){t.classList.remove('on');});
+  var pg=ge('pg-'+id);if(pg)pg.classList.add('on');
+  if(el)el.classList.add('on');
+}
+
+// ── CLOCK ────────────────────────────────────
+function clock(){
+  var n=new Date(),nc=ge('nc');if(nc)nc.textContent=n.toTimeString().slice(0,5);
+  var h=n.getHours(),m=n.getMinutes(),open=(h===9&&m>=15)||(h>9&&h<15)||(h===15&&m<=30);
+  var ms=ge('ms');if(ms)ms.innerHTML=open?'<span class="mstat open">🟢 OPEN</span>':'<span class="mstat closed">🔴 CLOSED</span>';
+}
+setInterval(clock,1000);clock();
+
+// ── TICKER ────────────────────────────────────
+(function(){
+  var tks=[
+    {n:'NIFTY',p:'25,426',c:'▼-38',up:false,t:'IDX'},{n:'BANKNIFTY',p:'54,123',c:'▼-124',up:false,t:'IDX'},
+    {n:'GIFT NIFTY',p:'25,654',c:'▲+228',up:true,t:'SGX'},{n:'INDIA VIX',p:'14.15',c:'▲+0.3',up:true,t:'VIX'},
+    {n:'S&P 500',p:'6,890',c:'▲+52',up:true,t:'US'},{n:'NASDAQ',p:'22,863',c:'▲+235',up:true,t:'US'},
+    {n:'NIKKEI',p:'59,012',c:'▲+510',up:true,t:'JP'},{n:'GOLD',p:'87,450',c:'▲+120',up:true,t:'COM'},
+    {n:'CRUDE',p:'6,240',c:'▼-18',up:false,t:'COM'},{n:'USD/INR',p:'86.42',c:'▼-0.08',up:false,t:'FX'}
+  ];
+  var t=ge('tkr');if(!t)return;
+  var h='';tks.concat(tks).forEach(function(d){
+    h+='<div class="ti"><span class="ttag">'+d.t+'</span><span style="color:var(--mu2)">'+d.n+'</span><span style="font-weight:700">'+d.p+'</span><span class="'+(d.up?'up':'dn')+'">'+d.c+'</span></div>';
+  });t.innerHTML=h;
+})();
+
+// ── REFRESH ──────────────────────────────────
+function refresh(){
+  var b=ge('rfb');b.classList.add('spin');
+  setTimeout(function(){b.classList.remove('spin');},600);
+  renderAll();showToast('Refreshed! 🔄','#001a0d','var(--g)');
+}
+
+// ── TOAST ────────────────────────────────────
+function showToast(msg,bg,clr){
+  var t=ge('toast');t.textContent=msg;t.style.background=bg;t.style.color=clr;
+  t.style.border='1px solid rgba(0,200,150,.25)';t.style.display='block';
+  setTimeout(function(){t.style.display='none';},2500);
+}
+
+// ── INIT ─────────────────────────────────────
+// Auto-fill CSV date fields with today
+(function(){
+  var n=new Date();
+  var dd=ge('csv-dd'),mm=ge('csv-mm'),yy=ge('csv-yy');
+  if(dd) dd.value=String(n.getDate()).padStart(2,'0');
+  if(mm) mm.value=String(n.getMonth()+1).padStart(2,'0');
+  if(yy) yy.value=n.getFullYear();
+})();
+renderAll();
+</script>
+</body>
+</html>
